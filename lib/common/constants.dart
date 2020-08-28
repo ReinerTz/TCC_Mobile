@@ -13,5 +13,5 @@ final kHintTextStyle = TextStyle(
 );
 
 class Constants {
-  static final api = "http://192.168.0.11:8080/api/";
+  static final api = "https://dvdr.herokuapp.com/api";
 }

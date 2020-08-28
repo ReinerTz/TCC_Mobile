@@ -1,12 +1,18 @@
-import 'dart:convert';
-import 'package:http/http.dart' as http;
+
 import 'package:dio/dio.dart';
 import 'package:tcc_project/common/constants.dart';
+import 'package:tcc_project/models/user_model.dart';
 
 class UserService {
   Future getUser(String uid) async {
-    Dio dio = Dio();
-    return await dio.get(Constants.api + "/user/" + uid);
+    final dio = Dio();
+    try {
+      var response = await dio.get(Constants.api + "/user/" + uid);     
+      return UserModel.fromMap(response.data);
+    } catch (e) {
+      print(e);
+      return null;
+    }
   }
 
   Future getUsers() async {
@@ -15,23 +21,11 @@ class UserService {
   }
 
   Future saveUser(Map<String, dynamic> params) async {
-    Dio dio = Dio();
-    Map<String, String> headers = {"Content-type": "application/json"};
-    //print("${Constants.api}/user");
+    final dio = Dio();
     try {    
       return await dio.post("${Constants.api}/user", data: params);
-      // return await http.post(
-      //   "${Constants.api}/user",
-      //   body: jsonEncode(params),
-      //   headers: headers
-      // );
     } catch (e) {
       print(e);
     }
-
-    // return await dio.post(
-    //   "${Constants.api}/user",
-    //   data: data,
-    // );
   }
 }

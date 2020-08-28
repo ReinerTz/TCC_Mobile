@@ -3,12 +3,14 @@ import 'package:tcc_project/models/user_model.dart';
 import 'package:tcc_project/services/user_service.dart';
 
 class SignUpService {
-  Future signUp(UserModel userModel, String password) async {
+  Future<bool> signUp(UserModel userModel, String password) async {
     FirebaseUser user = await signUpFirebase(userModel.email, password);
     UserService userService = UserService();
-    userModel.uid = user.uid;
+    userModel.uid = user.uid; //user.uid;
     try {
-      return userService.saveUser(userModel.toMap());
+      var response = await userService.saveUser(userModel.toMap());
+      print(response);
+      return response != null;
     } catch (e) {
       return e;
     }

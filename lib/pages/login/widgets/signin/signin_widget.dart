@@ -1,9 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:tcc_project/bindings/home/home_binding.dart';
 import 'package:tcc_project/common/constants.dart';
+import 'package:tcc_project/pages/home/home_page.dart';
 import 'package:tcc_project/pages/login/widgets/signin/signin_controller.dart';
-import 'package:tcc_project/pages/login/widgets/signup/signup_controller.dart';
+import 'package:tcc_project/routes/app_routes.dart';
 
 class SignInWidget extends StatefulWidget {
   @override
@@ -11,9 +13,10 @@ class SignInWidget extends StatefulWidget {
 }
 
 class _SignInWidgetState extends State<SignInWidget> {
+  final SignInController signInController = Get.put(SignInController());
+
   @override
   Widget build(BuildContext context) {
-    final SignInController signInController = Get.put(SignInController());
     Widget _buildEmailTF() {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -25,6 +28,7 @@ class _SignInWidgetState extends State<SignInWidget> {
           Container(
             alignment: Alignment.centerLeft,
             child: TextFormField(
+              onChanged: signInController.setEmail,
               keyboardType: TextInputType.emailAddress,
               style: TextStyle(
                   color: Colors.black, fontFamily: 'OpenSans', fontSize: 16),
@@ -45,6 +49,7 @@ class _SignInWidgetState extends State<SignInWidget> {
           Container(
             alignment: Alignment.centerLeft,
             child: TextFormField(
+              onChanged: signInController.setPassword,
               obscureText: true,
               style: TextStyle(
                   color: Colors.black, fontFamily: 'OpenSans', fontSize: 16),
@@ -75,7 +80,15 @@ class _SignInWidgetState extends State<SignInWidget> {
         padding: EdgeInsets.symmetric(vertical: 25.0),
         width: double.infinity,
         child: RaisedButton(
-          onPressed: () {},
+          onPressed: () async {
+            signInController.setLoading(true);
+            var response = await signInController.signIn();
+            signInController.setLoading(false);
+            if (response != null) {
+              Get.offAllNamed(Routes.HOME,
+                  arguments: {"user": response.toMap()});
+            }
+          },
           elevation: 5.0,
           padding: EdgeInsets.all(15.0),
           shape: RoundedRectangleBorder(
@@ -96,19 +109,27 @@ class _SignInWidgetState extends State<SignInWidget> {
       );
     }
 
-    return Column(
-      children: <Widget>[
-        _buildEmailTF(),
-        SizedBox(
-          height: 15,
-        ),
-        _buildPasswordTF(),
-        _buildForgotPassword(),
-        SizedBox(
-          height: 15,
-        ),
-        _buildButton(),
-      ],
-    );
+    return GetX<SignInController>(builder: (_) {
+      if (signInController.loading.value) {
+        return Center(
+          child: CircularProgressIndicator(),
+        );
+      }
+
+      return Column(
+        children: <Widget>[
+          _buildEmailTF(),
+          SizedBox(
+            height: 15,
+          ),
+          _buildPasswordTF(),
+          _buildForgotPassword(),
+          SizedBox(
+            height: 15,
+          ),
+          _buildButton(),
+        ],
+      );
+    });
   }
 }

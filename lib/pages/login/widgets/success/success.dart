@@ -1,7 +1,9 @@
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:tcc_project/pages/login/login_page.dart';
+import 'package:tcc_project/routes/app_routes.dart';
 
 class SuccessPage extends StatefulWidget {
   @override
@@ -10,27 +12,25 @@ class SuccessPage extends StatefulWidget {
 
 class _SuccessPageState extends State<SuccessPage> {
   @override
+  void initState() {
+    super.initState();
+    Timer(Duration(seconds: 5), () => Get.offAllNamed(Routes.HOME));
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
         color: Theme.of(context).primaryColor,
         child: Center(
           child: Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.all(20),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
                     "Parabéns, você se cadastrou no DVDR. Faça seu login e aproveite todas as funcionalidades!"),
-                MaterialButton(
-                  color: Colors.black,
-                  onPressed: () => Get.to(LoginPage()),
-                  child: Text(
-                    "Obrigado!",
-                    style: TextStyle(color: Colors.white),
-                  ),
-                )
               ],
             ),
           ),

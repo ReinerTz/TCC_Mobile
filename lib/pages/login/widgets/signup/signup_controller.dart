@@ -7,17 +7,20 @@ class SignUpController extends GetxController {
     this.email = "".obs;
     this.password = "".obs;
     this.name = "".obs;
+    this.loading = false.obs;
   }
 
   RxString name;
   RxString email;
   RxString password;
+  RxBool loading;
 
   setEmail(String value) => this.email.value = value;
   setPassword(String value) => this.password.value = value;
   setName(String value) => this.name.value = value;
+  setLoading(bool value) => this.loading.value = value;
 
-  signUp() async {
+  Future<bool> signUp() async {
     SignUpService sus = SignUpService();
     return await sus.signUp(
         UserModel(

@@ -2,7 +2,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tcc_project/common/constants.dart';
-import 'package:tcc_project/pages/login/login_page.dart';
 import 'package:tcc_project/pages/login/widgets/signup/signup_controller.dart';
 import 'package:tcc_project/pages/login/widgets/success/success.dart';
 
@@ -12,10 +11,9 @@ class SignUpWidget extends StatefulWidget {
 }
 
 class _SignUpWidgetState extends State<SignUpWidget> {
+  SignUpController suc = Get.put(SignUpController());
   @override
   Widget build(BuildContext context) {
-    SignUpController suc = SignUpController();
-
     Widget _buildEmailTF() {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -42,7 +40,7 @@ class _SignUpWidgetState extends State<SignUpWidget> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           Text(
-            'NOME',
+            'NOME COMPLETO',
             style: kLabelStyle,
           ),
           Container(
@@ -85,9 +83,12 @@ class _SignUpWidgetState extends State<SignUpWidget> {
         width: double.infinity,
         child: RaisedButton(
           onPressed: () async {
-            // var response = await suc.signUp();
-            // print(response);
-            Get.to(SuccessPage());
+            suc.setLoading(true);
+            var response = await suc.signUp();
+            suc.setLoading(false);
+            if (response != null) {
+              Get.to(SuccessPage());
+            }
           },
           elevation: 5.0,
           padding: EdgeInsets.all(15.0),
@@ -109,22 +110,28 @@ class _SignUpWidgetState extends State<SignUpWidget> {
       );
     }
 
-    return Column(
-      children: <Widget>[
-        _buildNameTF(),
-        SizedBox(
-          height: 15,
-        ),
-        _buildEmailTF(),
-        SizedBox(
-          height: 15,
-        ),
-        _buildPasswordTF(),
-        SizedBox(
-          height: 15,
-        ),
-        _buildButton(),
-      ],
-    );
+    return GetX<SignUpController>(builder: (_) {
+      if (suc.loading.value) {
+        return Center(child: CircularProgressIndicator());
+      }
+
+      return Column(
+        children: <Widget>[
+          _buildNameTF(),
+          SizedBox(
+            height: 15,
+          ),
+          _buildEmailTF(),
+          SizedBox(
+            height: 15,
+          ),
+          _buildPasswordTF(),
+          SizedBox(
+            height: 15,
+          ),
+          _buildButton(),
+        ],
+      );
+    });
   }
 }
