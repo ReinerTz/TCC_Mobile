@@ -82,14 +82,16 @@ class _SignUpWidgetState extends State<SignUpWidget> {
         padding: EdgeInsets.symmetric(vertical: 25.0),
         width: double.infinity,
         child: RaisedButton(
-          onPressed: () async {
-            suc.setLoading(true);
-            var response = await suc.signUp();
-            suc.setLoading(false);
-            if (response != null) {
-              Get.to(SuccessPage());
-            }
-          },
+          onPressed: suc.isValid
+              ? () async {
+                  suc.setLoading(true);
+                  var response = await suc.signUp();
+                  suc.setLoading(false);
+                  if (response) {
+                    Get.to(SuccessPage());
+                  }
+                }
+              : null,
           elevation: 5.0,
           padding: EdgeInsets.all(15.0),
           shape: RoundedRectangleBorder(

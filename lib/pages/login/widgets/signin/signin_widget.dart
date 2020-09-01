@@ -1,9 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:tcc_project/bindings/home/home_binding.dart';
 import 'package:tcc_project/common/constants.dart';
-import 'package:tcc_project/pages/home/home_page.dart';
 import 'package:tcc_project/pages/login/widgets/signin/signin_controller.dart';
 import 'package:tcc_project/routes/app_routes.dart';
 
@@ -80,15 +78,21 @@ class _SignInWidgetState extends State<SignInWidget> {
         padding: EdgeInsets.symmetric(vertical: 25.0),
         width: double.infinity,
         child: RaisedButton(
-          onPressed: () async {
-            signInController.setLoading(true);
-            var response = await signInController.signIn();
-            signInController.setLoading(false);
-            if (response != null) {
-              Get.offAllNamed(Routes.HOME,
-                  arguments: {"user": response.toMap()});
-            }
-          },
+          onPressed: signInController.isValid
+              ? () async {
+                  signInController.setLoading(true);
+                  var response = await signInController.signIn();
+                  signInController.setLoading(false);
+                  if (response != null) {
+                    Get.offAllNamed(Routes.HOME, arguments: {"user": response});
+                  } else {
+                    Get.defaultDialog(
+                        middleText:
+                            "Ocorreu um erro ao tentar realizar o login!",
+                        onConfirm: () => Get.back());
+                  }
+                }
+              : null,
           elevation: 5.0,
           padding: EdgeInsets.all(15.0),
           shape: RoundedRectangleBorder(

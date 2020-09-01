@@ -36,7 +36,7 @@ dependencies:
   google_fonts: ^1.1.0
   dio: ^3.0.10
   http: ^0.12.2
-  splashscreen: ^1.2.0
+  image_picker: ^0.6.7+7
 dev_dependencies:
   flutter_test:
     sdk: flutter

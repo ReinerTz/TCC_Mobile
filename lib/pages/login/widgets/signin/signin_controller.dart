@@ -17,7 +17,10 @@ class SignInController extends GetxController {
   setPassword(String value) => this.password.value = value;
   setLoading(bool value) => this.loading.value = value;
 
-  
+  bool get isValid =>
+      (this.password.value.length >= 6) && GetUtils.isEmail(this.email.value);
+  // (RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+  //     .hasMatch(this.email.value));
 
   Future<UserModel> signIn() async {
     SignInService sis = SignInService();

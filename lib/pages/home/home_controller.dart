@@ -5,7 +5,7 @@ class HomeController extends GetxController {
   UserModel user;
   HomeController({Map pageArgs}) {
     if (pageArgs != null) {
-      this.user = UserModel.fromMap(pageArgs["user"]);
+      this.user = pageArgs["user"];
     }
   }
 }

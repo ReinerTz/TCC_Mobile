@@ -25,7 +25,7 @@ class _DrawerWidgetState extends State<DrawerWidget> {
           widget.userModel.avatar,
           width: 100,
           height: 100,
-          fit: BoxFit.contain,
+          fit: BoxFit.fill,
         );
       }
 
@@ -33,7 +33,7 @@ class _DrawerWidgetState extends State<DrawerWidget> {
         "lib/assets/images/avatar-default.png",
         width: 100,
         height: 100,
-        fit: BoxFit.contain,
+        fit: BoxFit.fill,
       );
     }
 

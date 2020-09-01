@@ -20,6 +20,13 @@ class SignUpController extends GetxController {
   setName(String value) => this.name.value = value;
   setLoading(bool value) => this.loading.value = value;
 
+  bool get isValid =>
+      (this.password.value.length >= 6) &&
+      (GetUtils.isEmail(this.email.value)) &&
+      // (RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+      //     .hasMatch(this.email.value)) &&
+      (this.name.value.length >= 3);
+
   Future<bool> signUp() async {
     SignUpService sus = SignUpService();
     return await sus.signUp(

@@ -14,7 +14,7 @@ class _SuccessPageState extends State<SuccessPage> {
   @override
   void initState() {
     super.initState();
-    Timer(Duration(seconds: 5), () => Get.offAllNamed(Routes.HOME));
+    Timer(Duration(seconds: 5), () => Get.offAllNamed(Routes.INITIAL));
   }
 
   @override

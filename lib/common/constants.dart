@@ -12,6 +12,11 @@ final kHintTextStyle = TextStyle(
   fontFamily: 'OpenSans',
 );
 
+final kAppBar = AppBar(
+  title: Text("DVDR"),
+  centerTitle: true,
+);
+
 class Constants {
   static final api = "https://dvdr.herokuapp.com/api";
 }

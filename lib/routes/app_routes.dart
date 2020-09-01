@@ -3,4 +3,5 @@ abstract class Routes {
   static const HOME = '/home';
   static const BODY = '/body';
   static const PROFILE = '/profile';
+  static const PROFILE_UPDATE = '/profileupdate';
 }

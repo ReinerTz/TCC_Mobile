@@ -4,34 +4,52 @@
 
 import 'dart:convert';
 
-UserModel userModelFromMap(String str) => UserModel.fromMap(json.decode(str));
-
-String userModelToMap(UserModel data) => json.encode(data.toMap());
-
 class UserModel {
   UserModel({
     this.name,
     this.email,
-    this.uid,
+    this.birthday,
     this.avatar,
+    this.exclusiveUserName,
+    this.phone,
+    this.uid,
   });
 
   String name;
   String email;
-  String uid;
+  DateTime birthday;
   String avatar;
+  String exclusiveUserName;
+  String phone;
+  String uid;
+
+  factory UserModel.fromJson(String str) => UserModel.fromMap(json.decode(str));
+
+  String toJson() => json.encode(toMap());
 
   factory UserModel.fromMap(Map<String, dynamic> json) => UserModel(
-        name: json["name"],
-        email: json["email"],
-        uid: json["uid"],
-        avatar: json["avatar"],
+        name: json["name"] == null ? null : json["name"],
+        email: json["email"] == null ? null : json["email"],
+        birthday:
+            json["birthday"] == null ? null : DateTime.parse(json["birthday"]),
+        avatar: json["avatar"] == null ? null : json["avatar"],
+        exclusiveUserName: json["exclusive_user_name"] == null
+            ? null
+            : json["exclusive_user_name"],
+        phone: json["phone"] == null ? null : json["phone"],
+        uid: json["uid"] == null ? null : json["uid"],
       );
 
   Map<String, dynamic> toMap() => {
-        "name": name,
-        "email": email,
-        "uid": uid,
-        "avatar": avatar,
+        "name": name == null ? null : name,
+        "email": email == null ? null : email,
+        "birthday": birthday == null
+            ? null
+            : "${birthday.year.toString().padLeft(4, '0')}-${birthday.month.toString().padLeft(2, '0')}-${birthday.day.toString().padLeft(2, '0')}",
+        "avatar": avatar == null ? null : avatar,
+        "exclusive_user_name":
+            exclusiveUserName == null ? null : exclusiveUserName,
+        "phone": phone == null ? null : phone,
+        "uid": uid == null ? null : uid,
       };
 }
