@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tcc_project/models/user_model.dart';
-import 'package:tcc_project/pages/friendship/friendship_controller.dart';
+import 'package:tcc_project/pages/friendshiplist/friendship/friendship_controller.dart';
 import 'package:tcc_project/widgets/appbar_widget.dart';
 
 class FriendshipPage extends GetWidget<FriendshipController> {

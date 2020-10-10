@@ -6,6 +6,7 @@ class FriendshipController extends GetxController {
   UserModel user;
   RxList<UserModel> list = <UserModel>[].obs;
   RxBool loading = false.obs;
+  UserService _service = UserService();
 
   FriendshipController({Map pageArgs}) {
     if (pageArgs != null) {
@@ -18,12 +19,13 @@ class FriendshipController extends GetxController {
     this.list.clear();
     if (name.isNotEmpty) {
       try {
-        List response =
-            (await UserService.getUsersByExclusiveUserName(name)).data;
+        this.list = await _service.getUsersByExclusiveUserName(name);
+        // List response =
+        //     (await UserService.getUsersByExclusiveUserName(name)).data;
 
-        this.list.value = response.map<UserModel>((data) {
-          return UserModel.fromMap(data);
-        }).toList();
+        // this.list.value = response.map<UserModel>((data) {
+        //   return UserModel.fromMap(data);
+        // }).toList();
       } catch (e) {
         print(e);
       }

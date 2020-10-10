@@ -4,4 +4,8 @@ abstract class Routes {
   static const BODY = '/body';
   static const PROFILE = '/profile';
   static const PROFILE_UPDATE = '/profileupdate';
+  static const FRIENDSHIP = '/friendship';
+  static const USER_GROUP = '/usergroup';
+  static const USER_GROUP_CRUD = '/usergroupcrud';
+  static const FRIENDSHIPLIST = 'friendshiplist';
 }

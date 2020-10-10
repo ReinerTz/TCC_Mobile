@@ -1,5 +1,5 @@
 import 'package:get/get.dart';
-import 'package:tcc_project/pages/friendship/friendship_controller.dart';
+import 'package:tcc_project/pages/friendshiplist/friendship/friendship_controller.dart';
 
 class FriendshipBinding implements Bindings {
   @override

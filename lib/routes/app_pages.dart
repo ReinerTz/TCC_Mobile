@@ -1,12 +1,20 @@
 import 'package:get/get.dart';
+import 'package:tcc_project/bindings/friendship/friendship_binding.dart';
+import 'package:tcc_project/bindings/friendshiplist/friendshiplist_binding.dart';
 import 'package:tcc_project/bindings/home/home_binding.dart';
 import 'package:tcc_project/bindings/login/login_binding.dart';
 import 'package:tcc_project/bindings/profile/profile_binding.dart';
 import 'package:tcc_project/bindings/profile_update/profile_update_binding.dart';
+import 'package:tcc_project/bindings/user_group/user_group_binding.dart';
+import 'package:tcc_project/bindings/user_group/user_group_crud_binding.dart';
+import 'package:tcc_project/pages/friendshiplist/friendship/friendship_page.dart';
+import 'package:tcc_project/pages/friendshiplist/friendshiplist_page.dart';
 import 'package:tcc_project/pages/home/home_page.dart';
 import 'package:tcc_project/pages/login/login_page.dart';
 import 'package:tcc_project/pages/profile/profile_page.dart';
 import 'package:tcc_project/pages/profile_udpate/profile_update_page.dart';
+import 'package:tcc_project/pages/user_group/pages/crud/user_group_crud_page.dart';
+import 'package:tcc_project/pages/user_group/user_group_page.dart';
 import 'package:tcc_project/routes/app_routes.dart';
 
 class AppPages {
@@ -30,6 +38,26 @@ class AppPages {
       name: Routes.PROFILE_UPDATE,
       page: () => ProfileUpdatePage(),
       binding: ProfileUpdateBinding(),
+    ),
+    GetPage(
+      name: Routes.FRIENDSHIP,
+      page: () => FriendshipPage(),
+      binding: FriendshipBinding(),
+    ),
+    GetPage(
+      name: Routes.FRIENDSHIPLIST,
+      page: () => FriendshipListPage(),
+      binding: FriendshipListBinding(),
+    ),
+    GetPage(
+      name: Routes.USER_GROUP,
+      page: () => UserGroupPage(),
+      binding: UserGroupBinding(),
+    ),
+    GetPage(
+      name: Routes.USER_GROUP_CRUD,
+      page: () => UserGroupCrudPage(),
+      binding: UserGroupCrudBinding(),
     ),
   ];
 }

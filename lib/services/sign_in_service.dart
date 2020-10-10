@@ -3,6 +3,7 @@ import 'package:tcc_project/models/user_model.dart';
 import 'package:tcc_project/services/user_service.dart';
 
 class SignInService {
+  
   Future<UserModel> signIn(String email, String password) async {
     FirebaseUser user = await signUpFirebase(email, password);
     UserService userService = UserService();

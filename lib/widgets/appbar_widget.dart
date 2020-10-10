@@ -5,21 +5,27 @@ import 'package:google_fonts/google_fonts.dart';
 class AppBarWidget extends StatelessWidget with PreferredSizeWidget {
   @override
   final Size preferredSize;
+  final String title;
 
-  AppBarWidget() : preferredSize = Size.fromHeight(50.0);
+  AppBarWidget({this.title = ""}) : preferredSize = Size.fromHeight(50.0);
 
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      title: Text(
-        "DVDR",
-        style: GoogleFonts.acme(
-          fontSize: 30,
-          letterSpacing: 10,
-          fontWeight: FontWeight.w600,
-        ),
-      ),
-      centerTitle: true,
+      title: this.title == ""
+          ? Text(
+              "DVDR",
+              style: GoogleFonts.acme(
+                fontSize: 30,
+                letterSpacing: 10,
+                fontWeight: FontWeight.w600,
+              ),
+            )
+          : Text(
+              this.title,
+              style: GoogleFonts.roboto(),
+            ),
+      centerTitle: this.title.isEmpty,
     );
   }
 }
