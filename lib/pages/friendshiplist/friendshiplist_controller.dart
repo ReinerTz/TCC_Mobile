@@ -1,11 +1,10 @@
 import 'package:get/get.dart';
 import 'package:tcc_project/models/user_model.dart';
 import 'package:tcc_project/services/friendship_service.dart';
-import 'package:tcc_project/services/user_service.dart';
 
 class FriendshipListController extends GetxController {
   UserModel user;
-  RxList<UserModel> users = <UserModel>[].obs;
+  RxList<dynamic> friends = <dynamic>[].obs;
   FriendShipService _service = FriendShipService();
 
   FriendshipListController({Map pageArgs}) {
@@ -14,8 +13,14 @@ class FriendshipListController extends GetxController {
     }
   }
 
-  Future getAllFriends() {
-    var response = _service.findById(user.uid);
+  Future getAllFriends() async {
+    var response = await _service.findById(user.uid);
     return response;
+  }
+
+  void setList(dynamic list) {
+    this.friends.value =
+        (list as List).where((element) => element["status"] != 'SENT');
+    // this.friends.value = this.friends.where((data) => data.);
   }
 }

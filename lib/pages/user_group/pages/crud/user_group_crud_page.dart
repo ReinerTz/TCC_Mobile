@@ -565,7 +565,9 @@ class UserGroupCrudPage extends GetWidget<UserGroupCrudController> {
               child: MaterialButton(
                 color: Colors.white,
                 onPressed: () {
-                  ugcc.saveGroup(editTitle.text, editDescription.text);
+                  var response =
+                      ugcc.saveGroup(editTitle.text, editDescription.text);
+                  print(response);
                 },
                 child: Text(
                   "CRIAR",

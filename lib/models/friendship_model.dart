@@ -18,7 +18,7 @@ class FriendShipModel {
   int id;
   UserModel user;
   UserModel friend;
-  FriendShipStatus status;
+  FriendShipStatusEnum status;
 
   factory FriendShipModel.fromJson(String str) =>
       FriendShipModel.fromMap(json.decode(str));

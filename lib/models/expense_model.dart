@@ -4,18 +4,22 @@
 
 import 'dart:convert';
 
+import 'package:tcc_project/models/group_model.dart';
+
 class ExpenseModel {
   ExpenseModel({
     this.id,
     this.title,
     this.price,
     this.quantity,
+    this.group,
   });
 
   int id;
   String title;
   double price;
   int quantity;
+  GroupModel group;
 
   factory ExpenseModel.fromJson(String str) =>
       ExpenseModel.fromMap(json.decode(str));
@@ -27,6 +31,7 @@ class ExpenseModel {
         title: json["title"] == null ? null : json["title"],
         price: json["price"] == null ? null : json["price"],
         quantity: json["quantity"] == null ? null : json["quantity"],
+        group: json["group"] == null ? null : GroupModel.fromMap(json["group"]),
       );
 
   Map<String, dynamic> toMap() => {
@@ -34,5 +39,6 @@ class ExpenseModel {
         "title": title == null ? null : title,
         "price": price == null ? null : price,
         "quantity": quantity == null ? null : quantity,
+        "group": group == null ? null : group.toMap(),
       };
 }

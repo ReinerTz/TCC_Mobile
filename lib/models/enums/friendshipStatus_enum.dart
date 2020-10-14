@@ -1,1 +1,1 @@
-enum FriendShipStatus { ACCEPT, SENT, RECEIVED, NONE }
+enum FriendShipStatusEnum { ACCEPT, SENT, RECEIVED, NONE }

@@ -9,6 +9,30 @@ class FriendshipListPage extends GetWidget<FriendshipListController> {
   final flc = Get.find<FriendshipListController>();
   @override
   Widget build(BuildContext context) {
+    _buildUserAvatar(String image) {
+      if (image.isNull) {
+        return ClipOval(
+          child: Image.asset("lib/assets/images/avatar-default.png"),
+        );
+      }
+
+      return ClipOval(
+        child: Image.network(image),
+      );
+    }
+
+    _buildTrailing(String status) {
+      switch (status) {
+        case "ACCEPT":
+          return IconButton(icon: Icon(Icons.remove), onPressed: () => null);
+        case "RECEIVED":
+          return IconButton(
+            icon: Icon(Icons.add),
+            onPressed: () => null,
+          );
+      }
+    }
+
     return Scaffold(
       appBar: AppBarWidget(
         title: "Contatos",
@@ -29,25 +53,34 @@ class FriendshipListPage extends GetWidget<FriendshipListController> {
           FutureBuilder(
               future: flc.getAllFriends(),
               builder: (context, snapshot) {
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    ListTile(
-                      title: Text("teste"),
+                if (snapshot.data == null) {
+                  return Container(
+                    height: Get.mediaQuery.size.height,
+                    child: Center(
+                      child: CircularProgressIndicator(),
                     ),
-                    ListTile(
-                      title: Text("teste"),
-                    ),
-                  ],
+                  );
+                }
+
+                flc.friends.value = snapshot.data.data;
+
+                return Obx(
+                  () => Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: flc.friends.map<Widget>(
+                      (data) {
+                        return ListTile(
+                          leading: _buildUserAvatar(data["friend"]["avatar"]),
+                          title:
+                              Text(data["friend"]["exclusive_user_name"] ?? ""),
+                          subtitle: Text(data["friend"]["name"]),
+                          trailing: _buildTrailing(data["status"]),
+                        );
+                      },
+                    ).toList(),
+                  ),
                 );
               }),
-          // Column(
-          //   children: flc.users
-          //       .map(
-          //         (data) => ListTile(title: Text(data.name)),
-          //       )
-          //       .toList(),
-          // ),
         ],
       ),
     );

@@ -1,7 +1,10 @@
+import 'dart:convert';
+
 import 'package:get/get.dart';
 import 'package:tcc_project/models/expense_model.dart';
 import 'package:tcc_project/models/group_model.dart';
 import 'package:tcc_project/models/user_model.dart';
+import 'package:tcc_project/services/expense_service.dart';
 import 'package:tcc_project/services/group_service.dart';
 import 'package:uuid/uuid.dart';
 
@@ -10,6 +13,7 @@ enum DivisionOption { fixed, percentage, expense }
 class UserGroupCrudController extends GetxController {
   UserModel user;
   GroupService _service = GroupService();
+  ExpenseService _expenseService = ExpenseService();
   RxList<dynamic> peoples = <dynamic>[].obs;
   RxList<dynamic> expenses = <dynamic>[].obs;
 
@@ -40,18 +44,36 @@ class UserGroupCrudController extends GetxController {
 
   Future<bool> saveGroup(String title, String description) async {
     GroupModel group = GroupModel();
-    //group.createdAt = DateTime.now();
     group.description = description;
     group.sharedKey = Uuid().v1();
     group.title = title;
-    group.users = UserModel.fromJsonList(
-      this.peoples.where((data) {
-        return data.uid != null;
-      }).toList(),
-    );
+    group.size = this.peoples.length;
+    try {
+      group.users = UserModel.fromJsonList(
+        this.peoples.where((data) {
+          return data.uid != null;
+        }).toList(),
+      );
+    } catch (e) {
+      print(e);
+    }
+
     var result = await _service.saveGroup(group.toMap());
+
+    await saveExpenses(GroupModel.fromJson(json.decode(result.data)));
 
     // group.sharedKey = Uuid;
     //_service.saveGroup(params);
+  }
+
+  Future<bool> saveExpenses(GroupModel group) {
+    this.expenses.forEach((data) {
+      ExpenseModel expenseModel = ExpenseModel();
+      expenseModel.price = data.price;
+      expenseModel.quantity = data.quantity;
+      expenseModel.title = data.title;
+      expenseModel.group = group;
+      _expenseService.saveExpense(expenseModel.toMap());
+    });
   }
 }

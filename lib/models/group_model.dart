@@ -13,6 +13,7 @@ class GroupModel {
     this.description,
     this.sharedKey,
     this.createdAt,
+    this.size,
     this.users,
   });
 
@@ -20,6 +21,7 @@ class GroupModel {
   String title;
   String description;
   String sharedKey;
+  int size;
   DateTime createdAt;
   List<UserModel> users;
 
@@ -33,6 +35,7 @@ class GroupModel {
         title: json["title"] == null ? null : json["title"],
         description: json["description"] == null ? null : json["description"],
         sharedKey: json["sharedKey"] == null ? null : json["sharedKey"],
+        size: json["size"] == null ? null : json["size"],
         createdAt: json["createdAt"] == null
             ? null
             : DateTime.parse(
@@ -49,6 +52,7 @@ class GroupModel {
         "description": description == null ? null : description,
         "sharedKey": sharedKey == null ? null : sharedKey,
         "createdAt": createdAt == null ? null : createdAt,
+        "size": size == null ? null : size,
         "users": users == null
             ? null
             : List<dynamic>.from(users.map((x) => x.toMap())),
