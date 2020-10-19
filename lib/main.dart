@@ -23,7 +23,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         primarySwatch: Colors.blue,
-        primaryColor: Color.fromARGB(255, 134, 66, 252),
+        primaryColor: Color.fromARGB(255, 173, 133, 242),
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
       home: LoginPage(),

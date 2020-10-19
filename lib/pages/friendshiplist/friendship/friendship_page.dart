@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tcc_project/models/user_model.dart';
 import 'package:tcc_project/pages/friendshiplist/friendship/friendship_controller.dart';
+import 'package:tcc_project/routes/app_routes.dart';
 import 'package:tcc_project/widgets/appbar_widget.dart';
 
 class FriendshipPage extends GetWidget<FriendshipController> {
@@ -10,63 +11,51 @@ class FriendshipPage extends GetWidget<FriendshipController> {
   final friendshipController = Get.find<FriendshipController>();
   @override
   Widget build(BuildContext context) {
-    Widget _buildTile(UserModel user) {
+    Widget _buildUserAvatar(String image) {
+      return Container(
+        height: 60,
+        width: 60,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          image: DecorationImage(
+            fit: BoxFit.fill,
+            image: image.isNull
+                ? AssetImage("lib/assets/images/avatar-default.png")
+                : NetworkImage(image),
+          ),
+        ),
+      );
+    }
+
+    Widget _buildSubtitle(dynamic data) {
+      if (data["uid"] == friendshipController.user.uid) {
+        return Text(data["exclusive_user_name"]);
+      } else {
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(data["exclusive_user_name"]),
+            MaterialButton(
+              onPressed: () async =>
+                  await friendshipController.addFriend(UserModel.fromMap(data)),
+              color: Get.theme.primaryColor,
+              child: Text("Adicionar"),
+            )
+          ],
+        );
+      }
+    }
+
+    Widget _buildTile(dynamic user) {
       return InkWell(
         child: Card(
           child: ListTile(
-            title: Text(user.name),
-            subtitle: Text(user.exclusiveUserName),
+            leading: _buildUserAvatar(user["avatar"]),
+            title: Text(user["name"]),
+            subtitle: _buildSubtitle(user),
           ),
         ),
-        onTap: () {
-          Get.defaultDialog(
-            title: user.name,
-            confirm: Container(
-              color: Colors.green,
-              child: IconButton(
-                icon: Icon(
-                  Icons.person_add,
-                ),
-                onPressed: () {},
-              ),
-            ),
-            cancel: Container(
-              color: Colors.red,
-              child: IconButton(
-                icon: Icon(Icons.close),
-                onPressed: () {
-                  Get.back();
-                },
-              ),
-            ),
-            content: Row(
-              children: [
-                Container(
-                  width: 110,
-                  height: 110,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    image: DecorationImage(
-                      fit: BoxFit.fill,
-                      image: NetworkImage(user.avatar),
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      Text("Nome: ${user.name}"),
-                      Text(user.exclusiveUserName)
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          );
-        },
+        onTap: () => Get.toNamed(Routes.PROFILEVIEW, arguments: {"user": user}),
       );
     }
 
@@ -77,7 +66,8 @@ class FriendshipPage extends GetWidget<FriendshipController> {
         );
       }
 
-      return Column(
+      return ListView(
+        shrinkWrap: true,
         children: friendshipController.list
             .map(
               (data) => _buildTile(data),

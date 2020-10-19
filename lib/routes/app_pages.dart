@@ -5,6 +5,7 @@ import 'package:tcc_project/bindings/home/home_binding.dart';
 import 'package:tcc_project/bindings/login/login_binding.dart';
 import 'package:tcc_project/bindings/profile/profile_binding.dart';
 import 'package:tcc_project/bindings/profile_update/profile_update_binding.dart';
+import 'package:tcc_project/bindings/profile_view/profile_view_binding.dart';
 import 'package:tcc_project/bindings/user_group/user_group_binding.dart';
 import 'package:tcc_project/bindings/user_group/user_group_crud_binding.dart';
 import 'package:tcc_project/pages/friendshiplist/friendship/friendship_page.dart';
@@ -13,6 +14,7 @@ import 'package:tcc_project/pages/home/home_page.dart';
 import 'package:tcc_project/pages/login/login_page.dart';
 import 'package:tcc_project/pages/profile/profile_page.dart';
 import 'package:tcc_project/pages/profile_udpate/profile_update_page.dart';
+import 'package:tcc_project/pages/profile_view/profile_view_page.dart';
 import 'package:tcc_project/pages/user_group/pages/crud/user_group_crud_page.dart';
 import 'package:tcc_project/pages/user_group/user_group_page.dart';
 import 'package:tcc_project/routes/app_routes.dart';
@@ -58,6 +60,11 @@ class AppPages {
       name: Routes.USER_GROUP_CRUD,
       page: () => UserGroupCrudPage(),
       binding: UserGroupCrudBinding(),
+    ),
+    GetPage(
+      name: Routes.PROFILEVIEW,
+      page: () => ProfileViewPage(),
+      binding: ProfileViewBinding(),
     ),
   ];
 }

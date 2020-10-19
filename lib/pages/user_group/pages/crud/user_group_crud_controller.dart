@@ -16,6 +16,7 @@ class UserGroupCrudController extends GetxController {
   ExpenseService _expenseService = ExpenseService();
   RxList<dynamic> peoples = <dynamic>[].obs;
   RxList<dynamic> expenses = <dynamic>[].obs;
+  RxInt currentIndex = 0.obs;
 
   Rx<DivisionOption> division = DivisionOption.fixed.obs;
 
@@ -59,21 +60,25 @@ class UserGroupCrudController extends GetxController {
     }
 
     var result = await _service.saveGroup(group.toMap());
+    if (result) {
+      result =
+          await saveExpenses(GroupModel.fromJson(json.decode(result.data)));
+    }
 
-    await saveExpenses(GroupModel.fromJson(json.decode(result.data)));
-
-    // group.sharedKey = Uuid;
-    //_service.saveGroup(params);
+    return result;
   }
 
-  Future<bool> saveExpenses(GroupModel group) {
-    this.expenses.forEach((data) {
+  Future<bool> saveExpenses(GroupModel group) async {
+    bool success = true;
+    this.expenses.forEach((data) async {
       ExpenseModel expenseModel = ExpenseModel();
       expenseModel.price = data.price;
       expenseModel.quantity = data.quantity;
       expenseModel.title = data.title;
       expenseModel.group = group;
-      _expenseService.saveExpense(expenseModel.toMap());
+      var response = await _expenseService.saveExpense(expenseModel.toMap());
+      // if(response.status)
     });
+    return success;
   }
 }

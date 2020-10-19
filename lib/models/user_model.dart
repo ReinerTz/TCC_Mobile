@@ -20,8 +20,8 @@ class UserModel {
 
   String name;
   String email;
-  List<int> birthday;
-  dynamic avatar;
+  DateTime birthday;
+  String avatar;
   String exclusiveUserName;
   String phone;
   List<GroupModel> groups;
@@ -32,37 +32,26 @@ class UserModel {
   String toJson() => json.encode(toMap());
 
   factory UserModel.fromMap(Map<String, dynamic> json) => UserModel(
-        name: json["name"] == null ? null : json["name"],
-        email: json["email"] == null ? null : json["email"],
-        birthday: json["birthday"] == null
-            ? null
-            : List<int>.from(json["birthday"].map((x) => x)),
-        avatar: json["avatar"],
+        name: json["name"] == null ? "" : json["name"],
+        email: json["email"] == null ? "" : json["email"],
+        birthday: json["birthday"] == null ? null : json["birthday"],
+        avatar: json["avatar"] == null ? "" : json["avatar"],
         exclusiveUserName: json["exclusive_user_name"] == null
-            ? null
+            ? ""
             : json["exclusive_user_name"],
-        phone: json["phone"] == null ? null : json["phone"],
-        groups: json["groups"] == null
-            ? null
-            : List<GroupModel>.from(
-                json["groups"].map((x) => GroupModel.fromMap(x))),
+        phone: json["phone"] == null ? "" : json["phone"],
         uid: json["uid"] == null ? null : json["uid"],
       );
 
   Map<String, dynamic> toMap() => {
-        "name": name == null ? null : name,
-        "email": email == null ? null : email,
-        "birthday": birthday == null
-            ? null
-            : List<dynamic>.from(birthday.map((x) => x)),
-        "avatar": avatar,
+        "name": name == null ? "" : name,
+        "email": email == null ? "" : email,
+        "birthday": birthday == null ? null : birthday,
+        "avatar": avatar == null ? "" : avatar,
         "exclusive_user_name":
-            exclusiveUserName == null ? null : exclusiveUserName,
-        "phone": phone == null ? null : phone,
-        "groups": groups == null
-            ? null
-            : List<dynamic>.from(groups.map((x) => x.toMap())),
-        "uid": uid == null ? null : uid,
+            exclusiveUserName == null ? "" : exclusiveUserName,
+        "phone": phone == null ? "" : phone,
+        "uid": uid == null ? "" : uid,
       };
 
   static List<UserModel> fromJsonList(List list) {

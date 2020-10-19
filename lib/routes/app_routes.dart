@@ -7,5 +7,6 @@ abstract class Routes {
   static const FRIENDSHIP = '/friendship';
   static const USER_GROUP = '/usergroup';
   static const USER_GROUP_CRUD = '/usergroupcrud';
-  static const FRIENDSHIPLIST = 'friendshiplist';
+  static const FRIENDSHIPLIST = '/friendshiplist';
+  static const PROFILEVIEW = '/profileview';
 }

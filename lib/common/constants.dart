@@ -20,3 +20,10 @@ final kAppBar = AppBar(
 class Constants {
   static final api = "https://dvdr.herokuapp.com/api";
 }
+
+class FriendShipStatusEnum {
+  static const ACCEPT = 'ACCEPT';
+  static const SENT = 'SENT';
+  static const RECEIVED = 'RECEIVED';
+  static const NONE = 'NONE';
+}

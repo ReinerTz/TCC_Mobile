@@ -4,7 +4,6 @@
 
 import 'dart:convert';
 
-import 'package:tcc_project/models/enums/friendshipStatus_enum.dart';
 import 'package:tcc_project/models/user_model.dart';
 
 class FriendShipModel {
@@ -18,7 +17,7 @@ class FriendShipModel {
   int id;
   UserModel user;
   UserModel friend;
-  FriendShipStatusEnum status;
+  String status;
 
   factory FriendShipModel.fromJson(String str) =>
       FriendShipModel.fromMap(json.decode(str));

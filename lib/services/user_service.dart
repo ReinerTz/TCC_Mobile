@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:dio/dio.dart';
 import 'package:tcc_project/common/constants.dart';
 import 'package:tcc_project/models/user_model.dart';
@@ -31,12 +29,7 @@ class UserService {
 
   Future getUsersByExclusiveUserName(String name) async {
     try {
-      var response = await dio.get("${Constants.api}/username/$name");
-      return (response.data as List).map<dynamic>((data) {
-        UserModel.fromJson(data);
-      }).toList();
-
-      //  return UserModel.fromJsonList(response.data);
+      return await dio.get("${Constants.api}/username/$name");
     } catch (e) {
       print(e);
       throw e;
