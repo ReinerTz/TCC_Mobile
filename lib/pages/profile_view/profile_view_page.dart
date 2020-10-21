@@ -1,9 +1,8 @@
-import 'dart:io';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:tcc_project/common/constants.dart';
 import 'package:tcc_project/pages/profile_view/profile_view_controller.dart';
 import 'package:tcc_project/widgets/appbar_widget.dart';
 
@@ -16,7 +15,7 @@ class ProfileViewPage extends GetWidget<ProfileViewController> {
       return CircleAvatar(
         radius: 35,
         backgroundImage: profileController.user.avatar.isNullOrBlank
-            ? AssetImage("lib/assets/images/avatar-default.png")
+            ? AssetImage(AssetImages.AVATAR)
             : NetworkImage(profileController.user.avatar),
       );
     }

@@ -8,7 +8,7 @@ import 'package:tcc_project/services/expense_service.dart';
 import 'package:tcc_project/services/group_service.dart';
 import 'package:uuid/uuid.dart';
 
-enum DivisionOption { fixed, percentage, expense }
+enum Screen { peoples, expenses }
 
 class UserGroupCrudController extends GetxController {
   UserModel user;
@@ -16,15 +16,11 @@ class UserGroupCrudController extends GetxController {
   ExpenseService _expenseService = ExpenseService();
   RxList<dynamic> peoples = <dynamic>[].obs;
   RxList<dynamic> expenses = <dynamic>[].obs;
-  RxInt currentIndex = 0.obs;
-
-  Rx<DivisionOption> division = DivisionOption.fixed.obs;
+  Rx<Screen> actualScreen = Screen.peoples.obs;
 
   UserGroupCrudController({Map pageArgs}) {
     this.user = pageArgs["user"];
   }
-
-  void setDivision(DivisionOption value) => this.division.value = value;
 
   void generateList(int qtd) {
     this.peoples.clear();

@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:tcc_project/common/constants.dart';
 import 'package:tcc_project/pages/profile/profile_controller.dart';
 import 'package:tcc_project/routes/app_routes.dart';
 import 'package:tcc_project/widgets/appbar_widget.dart';
@@ -74,7 +75,7 @@ class ProfilePage extends GetWidget<ProfileController> {
             (profileController.avatar.value.isEmpty)) {
           return Container(
             decoration: BoxDecoration(border: Border.all()),
-            child: Image.asset("lib/assets/images/avatar-default.png",
+            child: Image.asset(AssetImages.AVATAR,
                 fit: BoxFit.fill,
                 height: MediaQuery.of(context).size.width,
                 width: double.infinity),

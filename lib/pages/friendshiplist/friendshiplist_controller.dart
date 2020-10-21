@@ -22,8 +22,10 @@ class FriendshipListController extends GetxController {
   }
 
   void setList(List list) {
-    this.friends.clear();
-    this.pendings.clear();
+    friends = <dynamic>[].obs;
+    pendings = <dynamic>[].obs;
+    friends.clear();
+    pendings.clear();
 
     // necessário, pois se a lista vier como null do ws vai dar pau.
     this.friends.value = List.from(
@@ -49,7 +51,7 @@ class FriendshipListController extends GetxController {
   Future removeFriend(UserModel friend) async {
     loading.value = true;
     try {
-      await _service.sendRejectInvate(friend, user);
+      await _service.sendRejectInvite(friend, user);
       await getAllFriends();
     } finally {
       loading.value = false;

@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:tcc_project/common/constants.dart';
 import 'package:tcc_project/models/user_model.dart';
 import 'package:tcc_project/routes/app_routes.dart';
 import 'package:tcc_project/widgets/custom_list_tile_widget.dart';
@@ -30,7 +31,7 @@ class _DrawerWidgetState extends State<DrawerWidget> {
       }
 
       return Image.asset(
-        "lib/assets/images/avatar-default.png",
+        AssetImages.AVATAR,
         width: 100,
         height: 100,
         fit: BoxFit.fill,

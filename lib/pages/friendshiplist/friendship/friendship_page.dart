@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:tcc_project/common/constants.dart';
 import 'package:tcc_project/models/user_model.dart';
 import 'package:tcc_project/pages/friendshiplist/friendship/friendship_controller.dart';
 import 'package:tcc_project/routes/app_routes.dart';
@@ -20,7 +21,7 @@ class FriendshipPage extends GetWidget<FriendshipController> {
           image: DecorationImage(
             fit: BoxFit.fill,
             image: image.isNull
-                ? AssetImage("lib/assets/images/avatar-default.png")
+                ? AssetImage(AssetImages.AVATAR)
                 : NetworkImage(image),
           ),
         ),
@@ -31,18 +32,57 @@ class FriendshipPage extends GetWidget<FriendshipController> {
       if (data["uid"] == friendshipController.user.uid) {
         return Text(data["exclusive_user_name"]);
       } else {
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(data["exclusive_user_name"]),
-            MaterialButton(
-              onPressed: () async =>
-                  await friendshipController.addFriend(UserModel.fromMap(data)),
-              color: Get.theme.primaryColor,
-              child: Text("Adicionar"),
-            )
-          ],
-        );
+        var where = friendshipController.friends
+            .where((element) => element["friend"]["uid"] == data["uid"])
+            .toList()[0];
+
+        if (where == null) {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(data["exclusive_user_name"]),
+              MaterialButton(
+                onPressed: () async => await friendshipController
+                    .addFriend(UserModel.fromMap(data)),
+                color: Get.theme.primaryColor,
+                child: Text("Adicionar"),
+              )
+            ],
+          );
+        } else {
+          switch (where["status"]) {
+            case "SENT":
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(data["exclusive_user_name"]),
+                  MaterialButton(
+                    onPressed: () async => await friendshipController
+                        .removeFriend(UserModel.fromMap(data)),
+                    color: Colors.grey,
+                    child: Text("Cancelar solicitação"),
+                  )
+                ],
+              );
+
+            case "RECEIVED":
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(data["exclusive_user_name"]),
+                  MaterialButton(
+                    onPressed: () async => await friendshipController
+                        .acceptFriend(UserModel.fromMap(data)),
+                    color: Get.theme.primaryColor,
+                    child: Text("Aceitar solicitação"),
+                  )
+                ],
+              );
+            default:
+              return Text(data[
+                  "exclusive_user_name"]); // Este caso retorna quando o case for == ACCEPT
+          }
+        }
       }
     }
 

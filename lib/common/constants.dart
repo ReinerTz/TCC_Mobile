@@ -27,3 +27,8 @@ class FriendShipStatusEnum {
   static const RECEIVED = 'RECEIVED';
   static const NONE = 'NONE';
 }
+
+class AssetImages {
+  static const AVATAR = 'lib/assets/images/avatar-default.png';
+  static const GROUP = 'lib/assets/images/group-default.png';
+}

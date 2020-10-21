@@ -5,10 +5,10 @@ import 'package:tcc_project/services/user_service.dart';
 
 class FriendshipController extends GetxController {
   UserModel user;
+  RxList<dynamic> friends = [].obs;
   RxList<dynamic> list = [].obs;
   RxBool loading = false.obs;
   UserService _service = UserService();
-
   FriendShipService _serviceFS = FriendShipService();
 
   FriendshipController({Map pageArgs}) {
@@ -24,6 +24,7 @@ class FriendshipController extends GetxController {
       try {
         var response = await _service.getUsersByExclusiveUserName(name);
         this.list.value = response.data ?? List();
+        await setFriends();
       } catch (e) {
         print(e);
       }
@@ -31,7 +32,34 @@ class FriendshipController extends GetxController {
     this.loading.value = false;
   }
 
+  Future setFriends() async {
+    var response = await _serviceFS.getInvitedSent(user.uid);
+    this.friends.value = (response.data as List);
+  }
+
   Future addFriend(UserModel friend) async {
     await _serviceFS.sendInvite(user, friend);
+  }
+
+  Future removeFriend(UserModel friend) async {
+    loading.value = true;
+    try {
+      await _serviceFS.sendRejectInvite(friend, user);
+
+      await setFriends();
+    } finally {
+      loading.value = false;
+    }
+  }
+
+  Future acceptFriend(UserModel friend) async {
+    loading.value = true;
+    try {
+      await _serviceFS.sendAcceptInvate(friend, user);
+
+      await setFriends();
+    } finally {
+      loading.value = false;
+    }
   }
 }

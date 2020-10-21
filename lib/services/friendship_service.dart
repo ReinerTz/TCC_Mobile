@@ -1,6 +1,3 @@
-import 'dart:collection';
-import 'dart:convert';
-
 import 'package:dio/dio.dart';
 import 'package:tcc_project/common/constants.dart';
 import 'package:tcc_project/models/friendship_model.dart';
@@ -68,7 +65,7 @@ class FriendShipService {
     // 1 - Pega todos os registros em que tenha o toUser e o fromUser e seta como ACCEPT
   }
 
-  Future sendRejectInvate(UserModel fromUser, UserModel toUser) async {
+  Future sendRejectInvite(UserModel fromUser, UserModel toUser) async {
     // 1 - Exclui todos os registros que estão como toUser e fromUser
     var response = await getFriendship(fromUser, toUser);
     if (response.statusCode == 200) {
@@ -82,5 +79,9 @@ class FriendShipService {
         throw error;
       }
     }
+  }
+
+  Future getInvitedSent(String uid) async {
+    return await dio.get("${Constants.api}/friendsByUser/$uid");
   }
 }

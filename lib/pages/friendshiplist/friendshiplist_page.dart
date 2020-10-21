@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:get/get.dart';
+import 'package:tcc_project/common/constants.dart';
 import 'package:tcc_project/models/user_model.dart';
 import 'package:tcc_project/pages/friendshiplist/friendshiplist_controller.dart';
 import 'package:tcc_project/routes/app_routes.dart';
@@ -22,7 +22,7 @@ class FriendshipListPage extends GetWidget<FriendshipListController> {
           image: DecorationImage(
             fit: BoxFit.fill,
             image: image.isNull
-                ? AssetImage("lib/assets/images/avatar-default.png")
+                ? AssetImage(AssetImages.AVATAR)
                 : NetworkImage(image),
           ),
         ),
