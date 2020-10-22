@@ -4,26 +4,22 @@
 
 import 'dart:convert';
 
-import 'package:tcc_project/models/user_model.dart';
-
 class GroupModel {
   GroupModel({
     this.id,
     this.title,
+    this.avatar,
     this.description,
     this.sharedKey,
     this.createdAt,
-    this.size,
-    this.users,
   });
 
   int id;
   String title;
+  dynamic avatar;
   String description;
   String sharedKey;
-  int size;
   DateTime createdAt;
-  List<UserModel> users;
 
   factory GroupModel.fromJson(String str) =>
       GroupModel.fromMap(json.decode(str));
@@ -33,28 +29,22 @@ class GroupModel {
   factory GroupModel.fromMap(Map<String, dynamic> json) => GroupModel(
         id: json["id"] == null ? null : json["id"],
         title: json["title"] == null ? null : json["title"],
+        avatar: json["avatar"],
         description: json["description"] == null ? null : json["description"],
         sharedKey: json["sharedKey"] == null ? null : json["sharedKey"],
-        size: json["size"] == null ? null : json["size"],
         createdAt: json["createdAt"] == null
             ? null
-            : DateTime.parse(
-                "${json["createdAt"][0]}-${json["createdAt"][1]}-${json["created"][2]}}"),
-        users: json["users"] == null
-            ? null
-            : List<UserModel>.from(
-                json["users"].map((x) => UserModel.fromMap(x))),
+            : DateTime.parse(json["createdAt"]),
       );
 
   Map<String, dynamic> toMap() => {
         "id": id == null ? null : id,
         "title": title == null ? null : title,
+        "avatar": avatar,
         "description": description == null ? null : description,
         "sharedKey": sharedKey == null ? null : sharedKey,
-        "createdAt": createdAt == null ? null : createdAt,
-        "size": size == null ? null : size,
-        "users": users == null
+        "createdAt": createdAt == null
             ? null
-            : List<dynamic>.from(users.map((x) => x.toMap())),
+            : "${createdAt.year.toString().padLeft(4, '0')}-${createdAt.month.toString().padLeft(2, '0')}-${createdAt.day.toString().padLeft(2, '0')}",
       };
 }

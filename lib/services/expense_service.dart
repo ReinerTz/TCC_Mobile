@@ -12,4 +12,13 @@ class ExpenseService {
       throw e;
     }
   }
+
+  Future getByGroup(dynamic id) async {
+    try {
+      return await dio.get("${Constants.api}/expense/group/$id");
+    } catch (e) {
+      print(e);
+      throw e;
+    }
+  }
 }

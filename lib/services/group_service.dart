@@ -31,4 +31,22 @@ class GroupService {
       throw e;
     }
   }
+
+  Future<dynamic> getAll() async {
+    try {
+      return await dio.get("${Constants.api}/groups");
+    } catch (e) {
+      print(e);
+      throw e;
+    }
+  }
+
+  Future<dynamic> getByUser(String uid) async {
+    try {
+      return await dio.get("${Constants.api}/group/user/$uid");
+    } catch (e) {
+      print(e);
+      throw e;
+    }
+  }
 }

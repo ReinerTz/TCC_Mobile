@@ -1,9 +1,13 @@
 import 'package:flutter/cupertino.dart';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 import 'package:tcc_project/common/constants.dart';
 import 'package:tcc_project/pages/user_group/pages/crud/user_group_crud_controller.dart';
+import 'package:tcc_project/routes/app_routes.dart';
 
 class UserGroupCrudPage extends GetWidget<UserGroupCrudController> {
   final ugcc = Get.find<UserGroupCrudController>();
@@ -11,38 +15,92 @@ class UserGroupCrudPage extends GetWidget<UserGroupCrudController> {
   final editTitle = TextEditingController();
   final editDescription = TextEditingController();
   final pageController = PageController(initialPage: 0);
+  final _picker = ImagePicker();
 
   @override
   Widget build(BuildContext context) {
     Widget _buildImage() {
-      return CircleAvatar(
-        backgroundImage: AssetImage(AssetImages.GROUP),
-        backgroundColor: Colors.white,
-        radius: 55,
-      );
+      return Obx(() {
+        if (ugcc.isLoading.value) {
+          return Container(
+            height: MediaQuery.of(context).size.width,
+            width: double.infinity,
+            decoration: BoxDecoration(color: Colors.white),
+            child: Center(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text("Carregando foto..."),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  CircularProgressIndicator()
+                ],
+              ),
+            ),
+          );
+        }
+
+        if ((ugcc.avatar.value == null) || (ugcc.avatar.value.isEmpty)) {
+          return GestureDetector(
+            onTap: () async {
+              PickedFile image =
+                  await _picker.getImage(source: ImageSource.gallery);
+              if (image != null) {
+                ugcc.updateProfileImage(File(image.path));
+              }
+            },
+            child: CircleAvatar(
+              backgroundImage: AssetImage(AssetImages.GROUP),
+              backgroundColor: Colors.white,
+              radius: 55,
+            ),
+          );
+        }
+
+        return GestureDetector(
+          onTap: () async {
+            PickedFile image =
+                await _picker.getImage(source: ImageSource.gallery);
+            if (image != null) {
+              ugcc.updateProfileImage(File(image.path));
+            }
+          },
+          child: CircleAvatar(
+            backgroundImage: NetworkImage(ugcc.avatar.value),
+            backgroundColor: Colors.white,
+            radius: 55,
+          ),
+        );
+      });
     }
 
     Widget _buildPeoples() {
       return Column(
-        children: [
-          Card(
-            child: ListTile(
-              title: Text("teste"),
-            ),
-          ),
-        ],
+        children: ugcc.peoples
+            .map(
+              (data) => Card(
+                child: ListTile(
+                  title: Text(data["user"]["name"]),
+                ),
+              ),
+            )
+            .toList(),
       );
     }
 
     Widget _buildExpenses() {
       return Column(
-        children: [
-          Card(
-            child: ListTile(
-              title: Text("testando"),
-            ),
-          )
-        ],
+        children: ugcc.expenses
+            .map(
+              (data) => Card(
+                child: ListTile(
+                  title: Text(data["title"]),
+                ),
+              ),
+            )
+            .toList(),
       );
     }
 
@@ -82,40 +140,40 @@ class UserGroupCrudPage extends GetWidget<UserGroupCrudController> {
               backgroundColor: Colors.black54,
               title: Text("Grupo"),
               flexibleSpace: Center(
-                child: GestureDetector(
-                  onTap: () => null,
-                  child: _buildImage(),
-                ),
+                child: _buildImage(),
               ),
               bottom: PreferredSize(
                 child: Padding(
                   padding: const EdgeInsets.all(12),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            "Grupo de alimentos",
-                            style: GoogleFonts.roboto(
-                                fontSize: 22, color: Colors.white),
-                          ),
-                          Text(
-                            "Criação em: 20/20/2000",
-                            style: GoogleFonts.roboto(
-                                fontSize: 12, color: Colors.white),
-                          ),
-                        ],
-                      ),
-                      IconButton(
-                        icon: Icon(
-                          Icons.edit,
-                          color: Colors.white,
+                  child: Obx(
+                    () => Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              ugcc.group.value.title,
+                              style: GoogleFonts.roboto(
+                                  fontSize: 22, color: Colors.white),
+                            ),
+                            Text(
+                              "Criação em: ${DateFormat('dd/MM/yyyy').format(ugcc.group.value.createdAt)}",
+                              style: GoogleFonts.roboto(
+                                  fontSize: 12, color: Colors.white),
+                            ),
+                          ],
                         ),
-                        onPressed: () => null,
-                      ),
-                    ],
+                        IconButton(
+                          icon: Icon(
+                            Icons.edit,
+                            color: Colors.white,
+                          ),
+                          onPressed: () => Get.toNamed(Routes.CRUD_TITLE,
+                              arguments: {"group": ugcc.group.value}),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
                 preferredSize: Size.fromHeight(175),

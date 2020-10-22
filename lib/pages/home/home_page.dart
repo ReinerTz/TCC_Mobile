@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:tcc_project/pages/home/home_controller.dart';
 import 'package:tcc_project/routes/app_routes.dart';
 import 'package:tcc_project/widgets/appbar_widget.dart';
@@ -14,8 +15,7 @@ class HomePage extends GetWidget<HomeController> {
     Widget _buildListViewItem(
         {@required String text, @required String route, IconData icon}) {
       return GestureDetector(
-        onTap: () =>
-            Get.toNamed(route, arguments: {"user": homeController.user}),
+        onTap: () => homeController.routes(route),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
           child: Container(
@@ -29,8 +29,14 @@ class HomePage extends GetWidget<HomeController> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Icon(icon),
-                Text(text),
+                Icon(
+                  icon,
+                  color: Colors.white,
+                ),
+                Text(
+                  text,
+                  style: GoogleFonts.roboto(color: Colors.white),
+                ),
               ],
             ),
           ),

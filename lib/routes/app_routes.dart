@@ -9,4 +9,6 @@ abstract class Routes {
   static const USER_GROUP_CRUD = '/usergroupcrud';
   static const FRIENDSHIPLIST = '/friendshiplist';
   static const PROFILEVIEW = '/profileview';
+  static const CRUD_EXPENSES = '/crudexpenses';
+  static const CRUD_TITLE = '/crudtitle';
 }

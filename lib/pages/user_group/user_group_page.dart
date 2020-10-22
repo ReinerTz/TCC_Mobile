@@ -11,18 +11,33 @@ class UserGroupPage extends GetWidget<UserGroupController> {
   @override
   Widget build(BuildContext context) {
     Widget _buildTile() {
-      return Column(
-        children: [
-          Container(
-            height: Get.mediaQuery.size.height * 0.9,
-            child: Center(
-              child: Text(
-                "Você não tem nenhum grupo ainda",
-                style: GoogleFonts.roboto(fontSize: 20),
-              ),
+      if (ugc.groups.isEmpty) {
+        return Container(
+          height: Get.mediaQuery.size.height * 0.9,
+          child: Center(
+            child: Text(
+              "Você não tem nenhum grupo ainda",
+              style: GoogleFonts.roboto(fontSize: 20),
             ),
           ),
-        ],
+        );
+      }
+
+      return Obx(
+        () => Column(
+          children: ugc.groups
+              .map(
+                (data) => InkWell(
+                  onTap: () => ugc.route(data),
+                  child: Card(
+                    child: ListTile(
+                      title: Text(data["title"]),
+                    ),
+                  ),
+                ),
+              )
+              .toList(),
+        ),
       );
     }
 
@@ -32,10 +47,14 @@ class UserGroupPage extends GetWidget<UserGroupController> {
       ),
       backgroundColor: Theme.of(context).primaryColor,
       floatingActionButton: FloatingActionButton(
+        backgroundColor: Colors.white,
         onPressed: () {
-          Get.toNamed(Routes.USER_GROUP_CRUD, arguments: {"user": ugc.user});
+          ugc.createGroup();
         },
-        child: Icon(Icons.add),
+        child: Icon(
+          Icons.add,
+          color: Colors.black,
+        ),
       ),
       body: ListView(
         children: [_buildTile()],
