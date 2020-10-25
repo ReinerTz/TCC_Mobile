@@ -34,19 +34,29 @@ class FriendshipController extends GetxController {
 
   Future setFriends() async {
     var response = await _serviceFS.getInvitedSent(user.uid);
-    this.friends.value = (response.data as List);
+
+    this.friends.value = response.data ?? List();
   }
 
   Future addFriend(UserModel friend) async {
-    await _serviceFS.sendInvite(user, friend);
+    loading.value = true;
+    try {
+      this.friends.clear();
+      await _serviceFS.sendInvite(user, friend);
+      setFriends();
+    } finally {
+      loading.value = false;
+    }
   }
 
   Future removeFriend(UserModel friend) async {
     loading.value = true;
     try {
       await _serviceFS.sendRejectInvite(friend, user);
+      friends.remove((friend as dynamic));
 
       await setFriends();
+      update();
     } finally {
       loading.value = false;
     }
@@ -55,9 +65,10 @@ class FriendshipController extends GetxController {
   Future acceptFriend(UserModel friend) async {
     loading.value = true;
     try {
+      this.friends.clear();
       await _serviceFS.sendAcceptInvate(friend, user);
-
       await setFriends();
+      update();
     } finally {
       loading.value = false;
     }

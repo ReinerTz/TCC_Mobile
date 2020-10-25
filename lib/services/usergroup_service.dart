@@ -21,4 +21,13 @@ class UserGroupService {
       throw e;
     }
   }
+
+  Future deleteUserGroup(Map<String, dynamic> params) async {
+    try {
+      return await dio.delete("${Constants.api}/usergroup", data: params);
+    } catch (e) {
+      print(e);
+      throw e;
+    }
+  }
 }

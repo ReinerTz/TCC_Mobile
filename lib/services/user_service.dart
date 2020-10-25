@@ -1,13 +1,11 @@
 import 'package:dio/dio.dart';
 import 'package:tcc_project/common/constants.dart';
-import 'package:tcc_project/models/user_model.dart';
 
 class UserService {
   final dio = Dio();
   Future getUser(String uid) async {
     try {
-      var response = await dio.get(Constants.api + "/user/" + uid);
-      return UserModel.fromMap(response.data);
+      return await dio.get(Constants.api + "/user/" + uid);
     } catch (e) {
       print(e);
       return null;

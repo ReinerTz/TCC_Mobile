@@ -7,6 +7,7 @@ import 'package:tcc_project/bindings/profile/profile_binding.dart';
 import 'package:tcc_project/bindings/profile_update/profile_update_binding.dart';
 import 'package:tcc_project/bindings/profile_view/profile_view_binding.dart';
 import 'package:tcc_project/bindings/user_group/crud_expenses_binding.dart';
+import 'package:tcc_project/bindings/user_group/crud_peoples_binding.dart';
 import 'package:tcc_project/bindings/user_group/crud_title_binding.dart';
 import 'package:tcc_project/bindings/user_group/user_group_binding.dart';
 import 'package:tcc_project/bindings/user_group/user_group_crud_binding.dart';
@@ -19,6 +20,7 @@ import 'package:tcc_project/pages/profile_udpate/profile_update_page.dart';
 import 'package:tcc_project/pages/profile_view/profile_view_page.dart';
 import 'package:tcc_project/pages/user_group/pages/crud/user_group_crud_page.dart';
 import 'package:tcc_project/pages/user_group/pages/crud_expenses/crud_expenses_page.dart';
+import 'package:tcc_project/pages/user_group/pages/crud_peoples/crud_peoples_page.dart';
 import 'package:tcc_project/pages/user_group/pages/crud_title/crud_title_page.dart';
 import 'package:tcc_project/pages/user_group/user_group_page.dart';
 import 'package:tcc_project/routes/app_routes.dart';
@@ -79,6 +81,11 @@ class AppPages {
       name: Routes.CRUD_TITLE,
       page: () => CrudTitlePage(),
       binding: CrudTitleBinding(),
+    ),
+    GetPage(
+      name: Routes.CRUD_PEOPLES,
+      page: () => CrudPeoplesPage(),
+      binding: CrudPeoplesBinding(),
     ),
   ];
 }

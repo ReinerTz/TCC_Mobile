@@ -19,11 +19,9 @@ class SignInController extends GetxController {
 
   bool get isValid =>
       (this.password.value.length >= 6) && GetUtils.isEmail(this.email.value);
-  // (RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
-  //     .hasMatch(this.email.value));
 
-  Future<UserModel> signIn() async {
+  Future<void> signIn() async {
     SignInService sis = SignInService();
-    return await sis.signIn(this.email.value, this.password.value);
+    return await sis.signInFirebase(this.email.value, this.password.value);
   }
 }

@@ -23,9 +23,6 @@ class UserGroupController extends GetxController {
   }
 
   Future createGroup() async {
-    GroupModel gm = GroupModel();
-    gm.title = "Grupo do ${this.user.name}";
-    gm.description = "";
     GroupModel group = GroupModel();
     group.description = "";
     group.sharedKey = Uuid().v1();
@@ -55,7 +52,7 @@ class UserGroupController extends GetxController {
   Future route(dynamic data) async {
     Response response = await _expenseService.getByGroup(data["id"]);
     if (response.statusCode == 200) {
-      var expenses = response.data;
+      var expenses = response.data ?? List();
       response = await _userGroupService.findAllUsersByGroup(data["id"]);
       if (response.statusCode == 200) {
         Get.toNamed(Routes.USER_GROUP_CRUD, arguments: {

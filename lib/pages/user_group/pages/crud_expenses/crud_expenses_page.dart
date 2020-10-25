@@ -9,7 +9,7 @@ class CrudExpensesPage extends GetWidget<CrudExpensesController> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBarWidget(
-        title: "Meus grupos",
+        title: "Despesas do grupo",
       ),
       backgroundColor: Theme.of(context).primaryColor,
       body: Container(),

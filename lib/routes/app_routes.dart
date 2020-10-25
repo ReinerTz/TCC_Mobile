@@ -11,4 +11,5 @@ abstract class Routes {
   static const PROFILEVIEW = '/profileview';
   static const CRUD_EXPENSES = '/crudexpenses';
   static const CRUD_TITLE = '/crudtitle';
+  static const CRUD_PEOPLES = '/crudpeoples';
 }

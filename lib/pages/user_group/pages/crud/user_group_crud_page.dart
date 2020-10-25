@@ -21,27 +21,6 @@ class UserGroupCrudPage extends GetWidget<UserGroupCrudController> {
   Widget build(BuildContext context) {
     Widget _buildImage() {
       return Obx(() {
-        if (ugcc.isLoading.value) {
-          return Container(
-            height: MediaQuery.of(context).size.width,
-            width: double.infinity,
-            decoration: BoxDecoration(color: Colors.white),
-            child: Center(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text("Carregando foto..."),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  CircularProgressIndicator()
-                ],
-              ),
-            ),
-          );
-        }
-
         if ((ugcc.avatar.value == null) || (ugcc.avatar.value.isEmpty)) {
           return GestureDetector(
             onTap: () async {
@@ -76,13 +55,49 @@ class UserGroupCrudPage extends GetWidget<UserGroupCrudController> {
       });
     }
 
+    Widget _buildUserAvatar({String image = ""}) {
+      return Container(
+        height: 60,
+        width: 60,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          image: DecorationImage(
+            fit: BoxFit.fill,
+            image: image.isEmpty
+                ? AssetImage(AssetImages.AVATAR)
+                : NetworkImage(image),
+          ),
+        ),
+      );
+    }
+
     Widget _buildPeoples() {
       return Column(
         children: ugcc.peoples
             .map(
               (data) => Card(
-                child: ListTile(
-                  title: Text(data["user"]["name"]),
+                child: Padding(
+                  padding: const EdgeInsets.all(3),
+                  child: ListTile(
+                    leading: _buildUserAvatar(
+                        image: data["user"] == null
+                            ? ""
+                            : data["user"]["avatar"] ?? ""),
+                    title: data["user"] != null
+                        ? Text(data["user"]["name"])
+                        : Text("Anônimo ${data["id"]}"),
+                    trailing: ((ugcc.isAdmin) &&
+                            (data["user"] != null) &&
+                            (data["user"]["uid"] != ugcc.user.uid))
+                        ? IconButton(
+                            icon: Icon(
+                              Icons.clear,
+                              color: Colors.red,
+                            ),
+                            onPressed: () => ugcc.deleteUserGroup(data),
+                          )
+                        : null,
+                  ),
                 ),
               ),
             )
@@ -129,7 +144,20 @@ class UserGroupCrudPage extends GetWidget<UserGroupCrudController> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => null,
+        onPressed: () async {
+          if (ugcc.actualScreen.value == Screen.peoples) {
+            var result = await ugcc.getFriends();
+            Get.toNamed(Routes.CRUD_PEOPLES, arguments: {
+              "user": ugcc.user.toMap(),
+              "peoples": ugcc.peoples,
+              "friends": result,
+              "group": ugcc.group.value
+            });
+          } else {
+            Get.toNamed(Routes.CRUD_EXPENSES,
+                arguments: {"user": ugcc.user.toMap()});
+          }
+        },
         child: Icon(Icons.add),
       ),
       body: NestedScrollView(
@@ -182,8 +210,27 @@ class UserGroupCrudPage extends GetWidget<UserGroupCrudController> {
           ];
         },
         body: SingleChildScrollView(
-          child: Obx(
-            () => Padding(
+          child: Obx(() {
+            if (ugcc.isLoading.value) {
+              return Container(
+                height: Get.mediaQuery.size.height * .5,
+                decoration: BoxDecoration(color: Get.theme.primaryColor),
+                child: Center(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text("Carregando..."),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      LinearProgressIndicator()
+                    ],
+                  ),
+                ),
+              );
+            }
+            return Padding(
               padding: const EdgeInsets.all(8.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -209,7 +256,7 @@ class UserGroupCrudPage extends GetWidget<UserGroupCrudController> {
                                         )
                                       : BoxDecoration(),
                               child: Text(
-                                "Pessoas",
+                                "Pessoas: ${ugcc.peoples.length}",
                                 style: GoogleFonts.roboto(
                                     color: Colors.white, fontSize: 19),
                               ),
@@ -230,7 +277,7 @@ class UserGroupCrudPage extends GetWidget<UserGroupCrudController> {
                                         )
                                       : BoxDecoration(),
                               child: Text(
-                                "Despesas",
+                                "Despesas: ${ugcc.expenses.length}",
                                 style: GoogleFonts.roboto(
                                     color: Colors.white, fontSize: 19),
                               ),
@@ -243,26 +290,17 @@ class UserGroupCrudPage extends GetWidget<UserGroupCrudController> {
                   SizedBox(
                     height: 15,
                   ),
-                  Builder(builder: (c) {
+                  Obx(() {
                     if (ugcc.actualScreen.value == Screen.peoples) {
                       return _buildPeoples();
                     } else {
                       return _buildExpenses();
                     }
                   }),
-                  // Column(
-                  //   children: [
-                  //     Card(
-                  //       child: ListTile(
-                  //         title: Text("teste"),
-                  //       ),
-                  //     ),
-                  //   ],
-                  // ),
                 ],
               ),
-            ),
-          ),
+            );
+          }),
         ),
       ),
     );

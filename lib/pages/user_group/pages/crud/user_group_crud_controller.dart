@@ -6,7 +6,9 @@ import 'package:get/get.dart';
 import 'package:tcc_project/models/expense_model.dart';
 import 'package:tcc_project/models/group_model.dart';
 import 'package:tcc_project/models/user_model.dart';
+import 'package:tcc_project/services/friendship_service.dart';
 import 'package:tcc_project/services/group_service.dart';
+import 'package:tcc_project/services/usergroup_service.dart';
 
 enum Screen { peoples, expenses }
 
@@ -14,12 +16,15 @@ class UserGroupCrudController extends GetxController {
   UserModel user;
   Rx<GroupModel> group = GroupModel().obs;
   GroupService _service = GroupService();
+  FriendShipService _serviceFS = FriendShipService();
+  UserGroupService _serviceUG = UserGroupService();
   //ExpenseService _expenseService = ExpenseService();
   RxList<dynamic> peoples = <dynamic>[].obs;
   RxList<dynamic> expenses = <dynamic>[].obs;
   Rx<Screen> actualScreen = Screen.peoples.obs;
   RxBool isLoading = false.obs;
   RxString avatar = "".obs;
+  bool isAdmin;
 
   UserGroupCrudController({Map pageArgs}) {
     this.user = UserModel.fromMap(pageArgs["user"]);
@@ -30,6 +35,15 @@ class UserGroupCrudController extends GetxController {
     if (this.user != null) {
       this.avatar.value = this.group.value.avatar;
     }
+
+    isAdmin = this
+        .peoples
+        .where((data) => ((data["user"] != null) &&
+            (data["user"]["uid"] == user.uid) &&
+            (data["admin"])))
+        .toList()
+        .isNotEmpty;
+    print(isAdmin);
   }
 
   void generateList(int qtd) {
@@ -54,21 +68,6 @@ class UserGroupCrudController extends GetxController {
 
     return result.statusCode == 200;
   }
-
-  // Future<bool> saveExpenses(GroupModel group) async {
-  //   bool success = true;
-  //   this.expenses.forEach((data) async {
-  //     ExpenseModel expenseModel = ExpenseModel();
-  //     expenseModel.price = data.price;
-  //     expenseModel.quantity = data.quantity;
-  //     expenseModel.title = data.title;
-  //     expenseModel.group = group;
-  //     Response response =
-  //         await _expenseService.saveExpense(expenseModel.toMap());
-  //     return response.statusCode == 200;
-  //   });
-  //   return success;
-  // }
 
   Future updateProfileImage(File image) async {
     this.isLoading.value = true;
@@ -97,5 +96,31 @@ class UserGroupCrudController extends GetxController {
       );
     }
     this.isLoading.value = false;
+  }
+
+  Future getFriends() async {
+    isLoading.value = true;
+    var result;
+    try {
+      Response response = await _serviceFS.findById(user.uid);
+      if (response.statusCode == 200) {
+        result = List.from(
+          response.data
+                  ?.where((element) => element["status"] == 'ACCEPT')
+                  ?.toList() ??
+              List(),
+        );
+      }
+    } finally {
+      isLoading.value = false;
+    }
+    return result;
+  }
+
+  Future deleteUserGroup(dynamic user) async {
+    Response result = await _serviceUG.deleteUserGroup(user);
+    if (result.statusCode == 200) {
+      this.peoples.remove(user);
+    }
   }
 }

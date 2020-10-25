@@ -34,9 +34,9 @@ class FriendshipPage extends GetWidget<FriendshipController> {
       } else {
         var where = friendshipController.friends
             .where((element) => element["friend"]["uid"] == data["uid"])
-            .toList()[0];
+            .toList();
 
-        if (where == null) {
+        if ((where == null) || (where.isEmpty)) {
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -50,7 +50,7 @@ class FriendshipPage extends GetWidget<FriendshipController> {
             ],
           );
         } else {
-          switch (where["status"]) {
+          switch (where[0]["status"]) {
             case "SENT":
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,

@@ -5,6 +5,6 @@ class CrudExpensesController extends GetxController {
   UserModel user;
   RxList<dynamic> groups = <dynamic>[].obs;
   CrudExpensesController({Map pageArgs}) {
-    this.user = pageArgs["user"];
+    this.user = UserModel.fromMap(pageArgs["user"]);
   }
 }

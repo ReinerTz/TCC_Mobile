@@ -1,25 +1,50 @@
+import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:tcc_project/models/user_model.dart';
 import 'package:tcc_project/services/user_service.dart';
 
-class SignInService {
-  
-  Future<UserModel> signIn(String email, String password) async {
-    FirebaseUser user = await signUpFirebase(email, password);
-    UserService userService = UserService();
+class SignInService extends GetxController {
+  UserService userService = UserService();
+
+  // Future<UserModel> signIn(String email, String password) async {
+  //   await FirebaseAuth.instance.signOut();
+  //   FirebaseUser user = await signUpFirebase(email, password);
+  //   Response response = await signInWithUid(user.uid);
+
+  //   if (response.statusCode == 200) {
+  //     return UserModel.fromMap(response.data);
+  //   }
+  //   return null;
+  // }
+
+  Future<FirebaseUser> signInFirebase(String email, String password) async {
     try {
-      UserModel response = await userService.getUser(user.uid);
-      return response;
-    } catch (e) {
-      print(e);
+      return (await FirebaseAuth.instance
+              .signInWithEmailAndPassword(email: email, password: password))
+          .user;
+    } catch (error) {
+      print(error);
+      Get.defaultDialog(
+        title: "Erro",
+        middleText: "Ocorreu um erro ao tentar realizar o login ${error.code}",
+        confirm: MaterialButton(
+          child: Text("Ok"),
+          color: Get.theme.primaryColor,
+          onPressed: () => Get.back(),
+        ),
+      );
       return null;
     }
   }
 
-  Future<FirebaseUser> signUpFirebase(String email, String password) async {
-    return (await FirebaseAuth.instance
-            .signInWithEmailAndPassword(email: email, password: password))
-        .user;
+  Future signInWithUid(String uid) async {
+    try {
+      return await userService.getUser(uid);
+    } catch (error) {
+      return null;
+    }
   }
 
   Future<bool> recoverPassword(String email) async {

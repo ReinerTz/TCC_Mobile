@@ -51,6 +51,7 @@ class FriendshipListController extends GetxController {
   Future removeFriend(UserModel friend) async {
     loading.value = true;
     try {
+      friends.remove((friend as dynamic));
       await _service.sendRejectInvite(friend, user);
       await getAllFriends();
     } finally {

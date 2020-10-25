@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tcc_project/common/constants.dart';
 import 'package:tcc_project/pages/login/widgets/signin/signin_controller.dart';
-import 'package:tcc_project/routes/app_routes.dart';
 
 class SignInWidget extends StatefulWidget {
   @override
@@ -80,17 +79,8 @@ class _SignInWidgetState extends State<SignInWidget> {
         child: RaisedButton(
           onPressed: signInController.isValid
               ? () async {
-                  signInController.setLoading(true);
-                  var response = await signInController.signIn();
-                  signInController.setLoading(false);
-                  if (response != null) {
-                    Get.offAllNamed(Routes.HOME, arguments: {"user": response});
-                  } else {
-                    Get.defaultDialog(
-                        middleText:
-                            "Ocorreu um erro ao tentar realizar o login!",
-                        onConfirm: () => Get.back());
-                  }
+                  await signInController
+                      .signIn(); // Quem faz o login é o listen que fica no login_controller.
                 }
               : null,
           elevation: 5.0,
