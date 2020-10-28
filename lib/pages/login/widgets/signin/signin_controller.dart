@@ -1,5 +1,4 @@
 import 'package:get/get.dart';
-import 'package:tcc_project/models/user_model.dart';
 import 'package:tcc_project/services/sign_in_service.dart';
 
 class SignInController extends GetxController {

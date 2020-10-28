@@ -11,6 +11,7 @@ import 'package:uuid/uuid.dart';
 
 class UserGroupController extends GetxController {
   UserModel user;
+  RxBool loading = false.obs;
   GroupService _service = GroupService();
   UserGroupService _userGroupService = UserGroupService();
   ExpenseService _expenseService = ExpenseService();
@@ -23,45 +24,55 @@ class UserGroupController extends GetxController {
   }
 
   Future createGroup() async {
-    GroupModel group = GroupModel();
-    group.description = "";
-    group.sharedKey = Uuid().v1();
-    group.title = "Grupo do ${this.user.name}";
+    loading.value = true;
+    try {
+      GroupModel group = GroupModel();
+      group.description = "";
+      group.sharedKey = Uuid().v1();
+      group.title = "Grupo do ${this.user.name}";
 
-    Response result = await _service.saveGroup(group.toMap());
-    if (result.statusCode == 200) {
-      GroupModel group = GroupModel.fromMap(result.data);
-      this.groups.add(group.toMap());
-      UserGroupModel userGroupModel = UserGroupModel();
-      userGroupModel.admin = true;
-      userGroupModel.receptor = true;
-      userGroupModel.group = group;
-      userGroupModel.user = this.user;
-      result = await _userGroupService.save(userGroupModel.toMap());
+      Response result = await _service.saveGroup(group.toMap());
       if (result.statusCode == 200) {
-        Get.toNamed(Routes.USER_GROUP_CRUD, arguments: {
-          "user": this.user.toMap(),
-          "group": group.toMap(),
-          "expenses": [],
-          "peoples": [result.data]
-        });
+        GroupModel group = GroupModel.fromMap(result.data);
+        this.groups.add(group.toMap());
+        UserGroupModel userGroupModel = UserGroupModel();
+        userGroupModel.admin = true;
+        userGroupModel.receptor = true;
+        userGroupModel.group = group;
+        userGroupModel.user = this.user;
+        result = await _userGroupService.save(userGroupModel.toMap());
+        if (result.statusCode == 200) {
+          Get.toNamed(Routes.USER_GROUP_CRUD, arguments: {
+            "user": this.user.toMap(),
+            "group": group.toMap(),
+            "expenses": [],
+            "peoples": [result.data]
+          });
+        }
       }
+    } finally {
+      loading.value = false;
     }
   }
 
   Future route(dynamic data) async {
-    Response response = await _expenseService.getByGroup(data["id"]);
-    if (response.statusCode == 200) {
-      var expenses = response.data ?? List();
-      response = await _userGroupService.findAllUsersByGroup(data["id"]);
+    loading.value = true;
+    try {
+      Response response = await _expenseService.getByGroup(data["id"]);
       if (response.statusCode == 200) {
-        Get.toNamed(Routes.USER_GROUP_CRUD, arguments: {
-          "user": this.user.toMap(),
-          "group": data,
-          "expenses": expenses,
-          "peoples": response.data
-        });
+        var expenses = response.data ?? List();
+        response = await _userGroupService.findAllUsersByGroup(data["id"]);
+        if (response.statusCode == 200) {
+          Get.toNamed(Routes.USER_GROUP_CRUD, arguments: {
+            "user": this.user.toMap(),
+            "group": data,
+            "expenses": expenses,
+            "peoples": response.data
+          });
+        }
       }
+    } finally {
+      loading.value = false;
     }
   }
 }

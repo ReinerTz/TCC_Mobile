@@ -6,6 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:tcc_project/common/constants.dart';
+import 'package:tcc_project/models/expense_model.dart';
 import 'package:tcc_project/pages/user_group/pages/crud/user_group_crud_controller.dart';
 import 'package:tcc_project/routes/app_routes.dart';
 
@@ -110,8 +111,17 @@ class UserGroupCrudPage extends GetWidget<UserGroupCrudController> {
         children: ugcc.expenses
             .map(
               (data) => Card(
-                child: ListTile(
-                  title: Text(data["title"]),
+                child: InkWell(
+                  onTap: () => Get.toNamed(Routes.CRUD_EXPENSES, arguments: {
+                    "user": ugcc.user.toMap(),
+                    "peoples": ugcc.peoples,
+                    "expense": ExpenseModel.fromMap(data),
+                  }),
+                  child: ListTile(
+                    title: Text(data["title"]),
+                    subtitle: Text(
+                        "R\$ ${(data["price"].toDouble() * data["quantity"].toDouble()).toStringAsFixed(2)}"),
+                  ),
                 ),
               ),
             )
@@ -144,6 +154,7 @@ class UserGroupCrudPage extends GetWidget<UserGroupCrudController> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
+        backgroundColor: Colors.white,
         onPressed: () async {
           if (ugcc.actualScreen.value == Screen.peoples) {
             var result = await ugcc.getFriends();
@@ -154,11 +165,18 @@ class UserGroupCrudPage extends GetWidget<UserGroupCrudController> {
               "group": ugcc.group.value
             });
           } else {
-            Get.toNamed(Routes.CRUD_EXPENSES,
-                arguments: {"user": ugcc.user.toMap()});
+            Get.toNamed(Routes.CRUD_EXPENSES, arguments: {
+              "user": ugcc.user.toMap(),
+              "peoples": ugcc.peoples,
+              "expense": ExpenseModel(
+                  price: 0,
+                  quantity: 0,
+                  group: ugcc.group.value,
+                  date: DateTime.now()),
+            });
           }
         },
-        child: Icon(Icons.add),
+        child: Icon(Icons.add, color: Colors.black),
       ),
       body: NestedScrollView(
         headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {

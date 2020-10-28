@@ -40,6 +40,9 @@ dependencies:
   uuid: ^2.2.2
   flutter_slidable: ^0.5.7
   intl: ^0.16.1
+  flutter_masked_text: ^0.8.0
+  flutter_localizations:
+    sdk: flutter   
 dev_dependencies:
   flutter_test:
     sdk: flutter

@@ -1,8 +1,6 @@
-import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:tcc_project/models/user_model.dart';
 import 'package:tcc_project/services/user_service.dart';
 
 class SignInService extends GetxController {

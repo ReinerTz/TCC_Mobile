@@ -39,8 +39,17 @@ class UserGroupPage extends GetWidget<UserGroupController> {
         );
       }
 
-      return Obx(
-        () => Column(
+      return Obx(() {
+        if (ugc.loading.value) {
+          return AspectRatio(
+            aspectRatio: 0.6,
+            child: Center(
+              child: CircularProgressIndicator(),
+            ),
+          );
+        }
+
+        return Column(
           children: ugc.groups
               .map(
                 (data) => InkWell(
@@ -54,8 +63,8 @@ class UserGroupPage extends GetWidget<UserGroupController> {
                 ),
               )
               .toList(),
-        ),
-      );
+        );
+      });
     }
 
     return Scaffold(
