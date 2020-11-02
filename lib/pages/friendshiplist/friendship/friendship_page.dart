@@ -6,6 +6,7 @@ import 'package:tcc_project/models/user_model.dart';
 import 'package:tcc_project/pages/friendshiplist/friendship/friendship_controller.dart';
 import 'package:tcc_project/routes/app_routes.dart';
 import 'package:tcc_project/widgets/appbar_widget.dart';
+import 'package:tcc_project/widgets/default_loading_widget.dart';
 
 class FriendshipPage extends GetWidget<FriendshipController> {
   final search = TextEditingController();
@@ -101,9 +102,7 @@ class FriendshipPage extends GetWidget<FriendshipController> {
 
     Widget _buildListTile() {
       if (friendshipController.loading.value) {
-        return Center(
-          child: CircularProgressIndicator(),
-        );
+        return DefaultLoadingWidget();
       }
 
       return ListView(

@@ -21,4 +21,13 @@ class ExpenseService {
       throw e;
     }
   }
+
+  Future delete(Map<String, dynamic> params) async {
+    try {
+      return await dio.delete("${Constants.api}/expense", data: params);
+    } catch (e) {
+      print(e);
+      throw e;
+    }
+  }
 }

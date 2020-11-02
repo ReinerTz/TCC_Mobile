@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:tcc_project/common/constants.dart';
 import 'package:tcc_project/pages/login/widgets/signup/signup_controller.dart';
 import 'package:tcc_project/pages/login/widgets/success/success.dart';
+import 'package:tcc_project/widgets/default_loading_widget.dart';
 
 class SignUpWidget extends StatefulWidget {
   @override
@@ -114,7 +115,7 @@ class _SignUpWidgetState extends State<SignUpWidget> {
 
     return GetX<SignUpController>(builder: (_) {
       if (suc.loading.value) {
-        return Center(child: CircularProgressIndicator());
+        return DefaultLoadingWidget();
       }
 
       return Column(

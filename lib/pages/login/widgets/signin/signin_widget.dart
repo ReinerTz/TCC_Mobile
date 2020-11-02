@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tcc_project/common/constants.dart';
 import 'package:tcc_project/pages/login/widgets/signin/signin_controller.dart';
+import 'package:tcc_project/widgets/default_loading_widget.dart';
 
 class SignInWidget extends StatefulWidget {
   @override
@@ -105,9 +106,7 @@ class _SignInWidgetState extends State<SignInWidget> {
 
     return GetX<SignInController>(builder: (_) {
       if (signInController.loading.value) {
-        return Center(
-          child: CircularProgressIndicator(),
-        );
+        return DefaultLoadingWidget();
       }
 
       return Column(

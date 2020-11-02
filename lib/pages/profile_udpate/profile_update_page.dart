@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:tcc_project/pages/profile_udpate/profile_update_controller.dart';
 import 'package:tcc_project/routes/app_routes.dart';
+import 'package:tcc_project/widgets/default_loading_widget.dart';
 
 class ProfileUpdatePage extends GetWidget<ProfileUpdateController> {
   final profileUpdateController = Get.find<ProfileUpdateController>();
@@ -15,9 +16,7 @@ class ProfileUpdatePage extends GetWidget<ProfileUpdateController> {
         decoration: BoxDecoration(color: Theme.of(context).primaryColor),
         child: GetX<ProfileUpdateController>(builder: (_) {
           if (profileUpdateController.loading.value) {
-            return Center(
-              child: CircularProgressIndicator(),
-            );
+            return DefaultLoadingWidget();
           }
 
           return Stack(

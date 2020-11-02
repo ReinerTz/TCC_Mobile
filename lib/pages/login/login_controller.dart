@@ -19,8 +19,7 @@ class LoginController extends GetxController {
       if (user != null) {
         if (user.uid.isNotEmpty) {
           var response = await sis.signInWithUid(user.uid);
-          Get.offAllNamed(Routes.HOME,
-              arguments: {"user": UserModel.fromMap(response.data)});
+          Get.offAllNamed(Routes.HOME, arguments: {"user": response.data});
         }
       }
       this.loading.value = false;

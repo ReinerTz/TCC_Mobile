@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:tcc_project/common/constants.dart';
 import 'package:tcc_project/pages/user_group/user_group_controller.dart';
 import 'package:tcc_project/widgets/appbar_widget.dart';
+import 'package:tcc_project/widgets/default_loading_widget.dart';
 
 class UserGroupPage extends GetWidget<UserGroupController> {
   final ugc = Get.find<UserGroupController>();
@@ -44,7 +45,7 @@ class UserGroupPage extends GetWidget<UserGroupController> {
           return AspectRatio(
             aspectRatio: 0.6,
             child: Center(
-              child: CircularProgressIndicator(),
+              child: DefaultLoadingWidget(),
             ),
           );
         }
@@ -55,9 +56,12 @@ class UserGroupPage extends GetWidget<UserGroupController> {
                 (data) => InkWell(
                   onTap: () => ugc.route(data),
                   child: Card(
-                    child: ListTile(
-                      leading: _buildUserAvatar(image: data["avatar"] ?? ""),
-                      title: Text(data["title"]),
+                    child: Padding(
+                      padding: const EdgeInsets.all(4),
+                      child: ListTile(
+                        leading: _buildUserAvatar(image: data["avatar"] ?? ""),
+                        title: Text(data["title"]),
+                      ),
                     ),
                   ),
                 ),
@@ -71,7 +75,7 @@ class UserGroupPage extends GetWidget<UserGroupController> {
         appBar: AppBarWidget(
           title: "Meus grupos",
         ),
-        backgroundColor: Theme.of(context).primaryColor,
+        backgroundColor: Get.theme.primaryColor,
         floatingActionButton: FloatingActionButton(
           backgroundColor: Colors.white,
           onPressed: () {
@@ -83,10 +87,7 @@ class UserGroupPage extends GetWidget<UserGroupController> {
           ),
         ),
         body: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: _buildTiles(),
-          ),
+          child: _buildTiles(),
         ));
   }
 }

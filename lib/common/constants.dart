@@ -18,7 +18,8 @@ final kAppBar = AppBar(
 );
 
 class Constants {
-  static final api = "https://dvdr.herokuapp.com/api";
+  static final api = "https://dvdr.herokuapp.com/api"; // PRD
+  //static final api = "http://10.0.2.2:8080/api"; // LOCAL
 }
 
 class FriendShipStatusEnum {

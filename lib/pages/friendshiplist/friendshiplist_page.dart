@@ -6,6 +6,7 @@ import 'package:tcc_project/models/user_model.dart';
 import 'package:tcc_project/pages/friendshiplist/friendshiplist_controller.dart';
 import 'package:tcc_project/routes/app_routes.dart';
 import 'package:tcc_project/widgets/appbar_widget.dart';
+import 'package:tcc_project/widgets/default_loading_widget.dart';
 
 class FriendshipListPage extends GetWidget<FriendshipListController> {
   final flc = Get.find<FriendshipListController>();
@@ -60,9 +61,7 @@ class FriendshipListPage extends GetWidget<FriendshipListController> {
                 ),
                 Obx(() {
                   if (flc.loading.value) {
-                    return Center(
-                      child: CircularProgressIndicator(),
-                    );
+                    return DefaultLoadingWidget();
                   }
 
                   return Column(

@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:tcc_project/pages/login/login_controller.dart';
 import 'package:tcc_project/pages/login/widgets/signin/signin_widget.dart';
 import 'package:tcc_project/pages/login/widgets/signup/signup_widget.dart';
+import 'package:tcc_project/widgets/default_loading_widget.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -23,9 +24,7 @@ class _LoginPageState extends State<LoginPage> {
             child: SingleChildScrollView(
               child: GetX<LoginController>(builder: (_) {
                 if (loginController.loading.value) {
-                  return Center(
-                    child: CircularProgressIndicator(),
-                  );
+                  return DefaultLoadingWidget();
                 }
 
                 return Card(

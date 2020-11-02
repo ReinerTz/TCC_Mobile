@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:tcc_project/pages/home/home_controller.dart';
 import 'package:tcc_project/routes/app_routes.dart';
 import 'package:tcc_project/widgets/appbar_widget.dart';
+import 'package:tcc_project/widgets/default_loading_widget.dart';
 import 'package:tcc_project/widgets/drawer_widget.dart';
 
 class HomePage extends GetWidget<HomeController> {
@@ -61,44 +62,50 @@ class HomePage extends GetWidget<HomeController> {
         appBar: AppBarWidget(),
         drawer: DrawerWidget(homeController.user, 0),
         backgroundColor: Theme.of(context).primaryColor,
-        body: Stack(
-          children: [
-            Positioned(
-              top: 5,
-              height: Get.mediaQuery.size.height * .75,
-              left: 5,
-              right: 5,
-              child: ListView(
-                children: [
-                  _buildHistoricItem(),
-                  _buildHistoricItem(),
-                  _buildHistoricItem(),
-                ],
-              ),
-            ),
-            Positioned(
-              bottom: 0 + Get.mediaQuery.padding.bottom,
-              left: 0,
-              right: 0,
-              child: Container(
-                height: 130,
+        body: Obx(() {
+          if (homeController.loading.value) {
+            return DefaultLoadingWidget();
+          }
+
+          return Stack(
+            children: [
+              Positioned(
+                top: 5,
+                height: Get.mediaQuery.size.height * .75,
+                left: 5,
+                right: 5,
                 child: ListView(
-                  scrollDirection: Axis.horizontal,
                   children: [
-                    _buildListViewItem(
-                        text: "Meus contatos",
-                        route: Routes.FRIENDSHIPLIST,
-                        icon: Icons.person_add),
-                    _buildListViewItem(
-                        text: "Meus grupos",
-                        route: Routes.USER_GROUP,
-                        icon: Icons.group_add),
+                    _buildHistoricItem(),
+                    _buildHistoricItem(),
+                    _buildHistoricItem(),
                   ],
                 ),
               ),
-            )
-          ],
-        ),
+              Positioned(
+                bottom: 0 + Get.mediaQuery.padding.bottom,
+                left: 0,
+                right: 0,
+                child: Container(
+                  height: 130,
+                  child: ListView(
+                    scrollDirection: Axis.horizontal,
+                    children: [
+                      _buildListViewItem(
+                          text: "Meus contatos",
+                          route: Routes.FRIENDSHIPLIST,
+                          icon: Icons.person_add),
+                      _buildListViewItem(
+                          text: "Meus grupos",
+                          route: Routes.USER_GROUP,
+                          icon: Icons.group_add),
+                    ],
+                  ),
+                ),
+              )
+            ],
+          );
+        }),
       ),
     );
   }

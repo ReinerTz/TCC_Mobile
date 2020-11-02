@@ -51,7 +51,7 @@ class _DrawerWidgetState extends State<DrawerWidget> {
             title: "Home",
             actualPage: widget.actualPage,
             page: 0,
-            arguments: {"user": widget.userModel},
+            arguments: {"user": widget.userModel.toMap()},
             route: Routes.HOME,
           ),
 

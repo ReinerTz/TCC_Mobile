@@ -74,58 +74,70 @@ class UserGroupCrudPage extends GetWidget<UserGroupCrudController> {
 
     Widget _buildPeoples() {
       return Column(
-        children: ugcc.peoples
-            .map(
-              (data) => Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(3),
-                  child: ListTile(
-                    leading: _buildUserAvatar(
-                        image: data["user"] == null
-                            ? ""
-                            : data["user"]["avatar"] ?? ""),
-                    title: data["user"] != null
-                        ? Text(data["user"]["name"])
-                        : Text("Anônimo ${data["id"]}"),
-                    trailing: ((ugcc.isAdmin) &&
-                            (data["user"] != null) &&
-                            (data["user"]["uid"] != ugcc.user.uid))
-                        ? IconButton(
-                            icon: Icon(
-                              Icons.clear,
-                              color: Colors.red,
-                            ),
-                            onPressed: () => ugcc.deleteUserGroup(data),
-                          )
-                        : null,
-                  ),
-                ),
+        children: ugcc.peoples.map((data) {
+          return Card(
+            child: Padding(
+              padding: const EdgeInsets.all(3),
+              child: ListTile(
+                leading: _buildUserAvatar(
+                    image: data["user"] == null
+                        ? ""
+                        : data["user"]["avatar"] ?? ""),
+                title: data["user"] != null
+                    ? Text(data["user"]["name"])
+                    : Text("Anônimo ${data["id"]}"),
+                subtitle: Text(
+                    "R\$ ${ugcc.getTotalByPeople(data["id"]).toStringAsFixed(2)}"),
+                trailing: ((ugcc.isAdmin) &&
+                        ((data["user"] == null) ||
+                            (data["user"]["uid"] != ugcc.user.uid)))
+                    ? IconButton(
+                        icon: Icon(
+                          Icons.clear,
+                          color: Colors.red,
+                        ),
+                        onPressed: () => ugcc.deleteUserGroup(data),
+                      )
+                    : null,
               ),
-            )
-            .toList(),
+            ),
+          );
+        }).toList(),
       );
     }
 
     Widget _buildExpenses() {
       return Column(
-        children: ugcc.expenses
-            .map(
-              (data) => Card(
-                child: InkWell(
-                  onTap: () => Get.toNamed(Routes.CRUD_EXPENSES, arguments: {
-                    "user": ugcc.user.toMap(),
-                    "peoples": ugcc.peoples,
-                    "expense": ExpenseModel.fromMap(data),
-                  }),
-                  child: ListTile(
-                    title: Text(data["title"]),
-                    subtitle: Text(
-                        "R\$ ${(data["price"].toDouble() * data["quantity"].toDouble()).toStringAsFixed(2)}"),
-                  ),
-                ),
+        children: ugcc.expenses.map((data) {
+          return Card(
+            child: InkWell(
+              onTap: () async {
+                dynamic peoples = await ugcc.getUserExpense(data);
+                Get.toNamed(Routes.CRUD_EXPENSES, arguments: {
+                  "user": ugcc.user.toMap(),
+                  "peoples": peoples,
+                  "expense": ExpenseModel.fromMap(data),
+                });
+              },
+              child: ListTile(
+                title: Text(data["title"]),
+                subtitle: Text(
+                    "R\$ ${(data["price"].toDouble() * data["quantity"].toDouble()).toStringAsFixed(2)}"),
+                trailing: ((ugcc.isAdmin) ||
+                        ((data["createdBy"] != null) &&
+                            (data["createdBy"]["uid"] == ugcc.user.uid)))
+                    ? IconButton(
+                        icon: Icon(
+                          Icons.clear,
+                          color: Colors.red,
+                        ),
+                        onPressed: () => ugcc.deleteExpense(data),
+                      )
+                    : null,
               ),
-            )
-            .toList(),
+            ),
+          );
+        }).toList(),
       );
     }
 
@@ -140,7 +152,41 @@ class UserGroupCrudPage extends GetWidget<UserGroupCrudController> {
           children: <Widget>[
             Padding(
               padding: const EdgeInsets.only(left: 8),
-              child: Text("Totalizador: "),
+              // child: Text("Totalizador: "),
+              child: FlatButton(
+                color: Get.theme.primaryColor,
+                child: Text("Resumo"),
+                onPressed: () {
+                  double totalExpenses = ugcc.getTotalExpenses();
+                  double totalSplit = ugcc.getTotalSplit();
+                  Get.defaultDialog(
+                      content: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                              "Total das despesas: R\$ ${totalExpenses.toStringAsFixed(2)}"),
+                          SizedBox(
+                            height: 10,
+                          ),
+                          Text(
+                              "Valor total rateado: R\$ ${totalSplit.toStringAsFixed(2)}"),
+                          SizedBox(
+                            height: 10,
+                          ),
+                          Text(
+                              "Diferença: R\$${(totalSplit - totalExpenses).toStringAsFixed(2)}"),
+                        ],
+                      ),
+                      title: "Resumo das despesas",
+                      confirm: FlatButton(
+                        color: Get.theme.primaryColor,
+                        child: Text("Ok"),
+                        onPressed: () {
+                          Get.back();
+                        },
+                      ));
+                },
+              ),
             ),
             Padding(
               padding: const EdgeInsets.only(right: 8),
@@ -167,10 +213,10 @@ class UserGroupCrudPage extends GetWidget<UserGroupCrudController> {
           } else {
             Get.toNamed(Routes.CRUD_EXPENSES, arguments: {
               "user": ugcc.user.toMap(),
-              "peoples": ugcc.peoples,
+              "peoples": ugcc.createUserExpense(),
               "expense": ExpenseModel(
-                  price: 0,
-                  quantity: 0,
+                  price: 1,
+                  quantity: 1,
                   group: ugcc.group.value,
                   date: DateTime.now()),
             });
@@ -199,7 +245,10 @@ class UserGroupCrudPage extends GetWidget<UserGroupCrudController> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              ugcc.group.value.title,
+                              ugcc.group.value.title.length > 22
+                                  ? ugcc.group.value.title.substring(0, 22) +
+                                      "..."
+                                  : ugcc.group.value.title,
                               style: GoogleFonts.roboto(
                                   fontSize: 22, color: Colors.white),
                             ),
