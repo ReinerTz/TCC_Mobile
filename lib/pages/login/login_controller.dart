@@ -1,12 +1,15 @@
+import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
-import 'package:tcc_project/models/user_model.dart';
 import 'package:tcc_project/routes/app_routes.dart';
 import 'package:tcc_project/services/sign_in_service.dart';
+import 'package:tcc_project/services/userexpense_service.dart';
 
 enum Status { NONE, NOTLOGGED }
 
 class LoginController extends GetxController {
+  UserExpenseService _userExpenseService = UserExpenseService();
+
   LoginController() {
     firstScreen.value = true;
   }
@@ -18,8 +21,15 @@ class LoginController extends GetxController {
       update();
       if (user != null) {
         if (user.uid.isNotEmpty) {
-          var response = await sis.signInWithUid(user.uid);
-          Get.offAllNamed(Routes.HOME, arguments: {"user": response.data});
+          Response response = await sis.signInWithUid(user.uid);
+          if (response.statusCode == 200) {
+            Response result =
+                await _userExpenseService.findExpensesbyUser(user.uid);
+            Get.offAllNamed(Routes.HOME, arguments: {
+              "user": response.data,
+              "userexpenses": result.data
+            });
+          }
         }
       }
       this.loading.value = false;

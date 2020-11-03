@@ -45,13 +45,22 @@ class HomePage extends GetWidget<HomeController> {
       );
     }
 
-    Widget _buildHistoricItem() {
+    Widget _buildHistoricItem({dynamic data}) {
       return Padding(
         padding: const EdgeInsets.all(3.0),
-        child: Container(
-          decoration: BoxDecoration(color: Colors.white, border: Border.all()),
-          child: ListTile(
-            title: Text("teste"),
+        child: GestureDetector(
+          onTap: () {},
+          child: Container(
+            decoration:
+                BoxDecoration(color: Colors.white, border: Border.all()),
+            child: ListTile(
+              title: Text(
+                "Grupo: ${data["userGroup"]["group"]["title"]}",
+                style: GoogleFonts.roboto(fontWeight: FontWeight.w600),
+              ),
+              subtitle:
+                  Text("Valor gasto: R\$ ${data["price"].toStringAsFixed(2)}"),
+            ),
           ),
         ),
       );
@@ -74,12 +83,12 @@ class HomePage extends GetWidget<HomeController> {
                 height: Get.mediaQuery.size.height * .75,
                 left: 5,
                 right: 5,
-                child: ListView(
-                  children: [
-                    _buildHistoricItem(),
-                    _buildHistoricItem(),
-                    _buildHistoricItem(),
-                  ],
+                child: Obx(
+                  () => ListView(
+                    children: homeController.listItems.map((data) {
+                      return _buildHistoricItem(data: data);
+                    }).toList(),
+                  ),
                 ),
               ),
               Positioned(

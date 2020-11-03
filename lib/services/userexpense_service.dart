@@ -49,4 +49,14 @@ class UserExpenseService {
       throw new HttpException("Aconteceu um erro: $error");
     }
   }
+
+  Future<Response> findExpensesbyUser(String uid) async {
+    try {
+      return await dio.get(
+        "${Constants.api}/userexpense/user/$uid",
+      );
+    } catch (error) {
+      throw new HttpException("Aconteceu um erro: $error");
+    }
+  }
 }
