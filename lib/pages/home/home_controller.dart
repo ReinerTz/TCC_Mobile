@@ -39,19 +39,21 @@ class HomeController extends GetxController {
   }
 
   void _buildListItems() {
-    loading.value = true;
+    if (this.userExpenses.value != null) {
+      loading.value = true;
 
-    try {
-      listItems.clear();
+      try {
+        listItems.clear();
 
-      this.userExpenses.forEach((data) {
-        var item = listItems.isEmpty ? null : _getItem(data);
-        if (item == null) {
-          listItems.add(data);
-        }
-      });
-    } finally {
-      loading.value = false;
+        this.userExpenses.forEach((data) {
+          var item = listItems.isEmpty ? null : _getItem(data);
+          if (item == null) {
+            listItems.add(data);
+          }
+        });
+      } finally {
+        loading.value = false;
+      }
     }
   }
 
