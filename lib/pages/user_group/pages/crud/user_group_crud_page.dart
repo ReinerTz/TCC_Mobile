@@ -141,6 +141,129 @@ class UserGroupCrudPage extends GetWidget<UserGroupCrudController> {
       );
     }
 
+    _buildDialog() {
+      double totalExpenses = ugcc.getTotalExpenses();
+      double totalSplit = ugcc.getTotalSplit();
+      double myTotal = ugcc.getMyTotal();
+      List lst = ugcc.getMyExpenses();
+      Get.dialog(Card(
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Align(
+                alignment: Alignment.topRight,
+                child: IconButton(
+                  icon: Icon(Icons.close),
+                  onPressed: () => Get.back(),
+                ),
+              ),
+              SizedBox(
+                height: 15,
+              ),
+              Center(
+                child: Text(
+                  "Resumo",
+                  style: GoogleFonts.roboto(
+                      fontSize: 26, fontWeight: FontWeight.w600),
+                ),
+              ),
+              SizedBox(
+                height: 15,
+              ),
+              Padding(
+                padding: EdgeInsets.only(left: 40),
+                child: Text(
+                  "Valor das despesas: R\$ ${totalExpenses.toStringAsFixed(2)}",
+                  style: GoogleFonts.roboto(fontSize: 16),
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.only(left: 40),
+                child: Text(
+                  "Valor pago por pessoa: R\$ ${totalSplit.toStringAsFixed(2)}",
+                  style: GoogleFonts.roboto(fontSize: 16),
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.only(left: 40),
+                child: Text(
+                  "Diferença: R\$ ${(totalSplit - totalExpenses).toStringAsFixed(2)}",
+                  style: GoogleFonts.roboto(
+                      fontSize: 16,
+                      color: (totalSplit - totalExpenses) < 0
+                          ? Colors.red
+                          : (totalSplit - totalExpenses) > 0
+                              ? Colors.green
+                              : Colors.black),
+                ),
+              ),
+              SizedBox(
+                height: 15,
+              ),
+              Padding(
+                padding: EdgeInsets.only(left: 40),
+                child: Text(
+                  "Total a pagar: R\$ ${myTotal.toStringAsFixed(2)}",
+                  style: GoogleFonts.roboto(
+                    fontSize: 24,
+                  ),
+                ),
+              ),
+              SizedBox(
+                height: 15,
+              ),
+              Column(
+                  children: lst.map((data) {
+                return Card(
+                  elevation: 3,
+                  child: ListTile(
+                    title: Text(data["expense"]["title"]),
+                    trailing: Text(
+                      "R\$ ${data["price"].toStringAsFixed(2)}",
+                      style: GoogleFonts.roboto(fontSize: 20),
+                    ),
+                  ),
+                );
+              }).toList())
+            ],
+          ),
+        ),
+      ));
+
+      // double totalExpenses = ugcc.getTotalExpenses();
+      //                 double totalSplit = ugcc.getTotalSplit();
+
+      //                return Get.defaultDialog(
+      //                   content: Column(
+      //                     crossAxisAlignment: CrossAxisAlignment.start,
+      //                     children: [
+      //                       Text(
+      //                           "Total das despesas: R\$ ${totalExpenses.toStringAsFixed(2)}"),
+      //                       SizedBox(
+      //                         height: 10,
+      //                       ),
+      //                       Text(
+      //                           "Valor total rateado: R\$ ${totalSplit.toStringAsFixed(2)}"),
+      //                       SizedBox(
+      //                         height: 10,
+      //                       ),
+      //                       Text(
+      //                           "Diferença: R\$${(totalSplit - totalExpenses).toStringAsFixed(2)}"),
+      //                     ],
+      //                   ),
+      //                   title: "Resumo das despesas",
+      //                   confirm: FlatButton(
+      //                     color: Get.theme.primaryColor,
+      //                     child: Text("Ok"),
+      //                     onPressed: () {
+      //                       Get.back();
+      //                     },
+      //                   ),
+      //                 );
+    }
+
     return Scaffold(
       backgroundColor: Get.theme.primaryColor,
       bottomNavigationBar: BottomAppBar(
@@ -157,34 +280,7 @@ class UserGroupCrudPage extends GetWidget<UserGroupCrudController> {
                 color: Get.theme.primaryColor,
                 child: Text("Resumo"),
                 onPressed: () {
-                  double totalExpenses = ugcc.getTotalExpenses();
-                  double totalSplit = ugcc.getTotalSplit();
-                  Get.defaultDialog(
-                      content: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                              "Total das despesas: R\$ ${totalExpenses.toStringAsFixed(2)}"),
-                          SizedBox(
-                            height: 10,
-                          ),
-                          Text(
-                              "Valor total rateado: R\$ ${totalSplit.toStringAsFixed(2)}"),
-                          SizedBox(
-                            height: 10,
-                          ),
-                          Text(
-                              "Diferença: R\$${(totalSplit - totalExpenses).toStringAsFixed(2)}"),
-                        ],
-                      ),
-                      title: "Resumo das despesas",
-                      confirm: FlatButton(
-                        color: Get.theme.primaryColor,
-                        child: Text("Ok"),
-                        onPressed: () {
-                          Get.back();
-                        },
-                      ));
+                  _buildDialog();
                 },
               ),
             ),

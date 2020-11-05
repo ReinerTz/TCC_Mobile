@@ -189,4 +189,26 @@ class UserGroupCrudController extends GetxController {
     });
     return value;
   }
+
+  double getMyTotal() {
+    double value = 0;
+    this
+        .userExpenses
+        .where((data) =>
+            (data["userGroup"]["user"] != null) &&
+            (data["userGroup"]["user"]["uid"] == user.uid))
+        .forEach((element) {
+      value += element["price"];
+    });
+    return value;
+  }
+
+  List<dynamic> getMyExpenses() {
+    return this
+        .userExpenses
+        .where((data) =>
+            (data["userGroup"]["user"] != null) &&
+            (data["userGroup"]["user"]["uid"] == user.uid))
+        .toList();
+  }
 }
