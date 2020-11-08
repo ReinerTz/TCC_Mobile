@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tcc_project/pages/user_group/pages/crud_peoples/crud_peoples_controller.dart';
 import 'package:tcc_project/widgets/appbar_widget.dart';
+import 'package:tcc_project/widgets/default_loading_widget.dart';
 
 class CrudPeoplesPage extends GetWidget<CrudPeoplesController> {
   final cpc = Get.find<CrudPeoplesController>();
@@ -11,6 +12,10 @@ class CrudPeoplesPage extends GetWidget<CrudPeoplesController> {
     Widget _buildTile(dynamic user) {
       return Obx(
         () {
+          if (cpc.loading.value) {
+            return DefaultLoadingWidget();
+          }
+
           bool find = cpc.peoples
               .where(
                 (data) => ((data["user"] != null) &&
@@ -75,7 +80,29 @@ class CrudPeoplesPage extends GetWidget<CrudPeoplesController> {
                         Icons.add,
                         color: Get.theme.primaryColor,
                       ),
-                      onPressed: () => cpc.addAnonimous(),
+                      onPressed: () => Get.defaultDialog(
+                        title: "Informação",
+                        //middleText: "Adicione um apelido para o anônimo",
+                        content: Column(
+                          children: [
+                            Text("Adicione um apelido para o anônimo"),
+                            TextField(
+                              decoration: InputDecoration(labelText: "Nome"),
+                              onChanged: cpc.setAnonimousName,
+                            ),
+                          ],
+                        ),
+                        backgroundColor: Colors.white,
+                        confirm: MaterialButton(
+                          color: Get.theme.primaryColor,
+                          child: Text("Ok"),
+                          onPressed: () async {
+                            Get.back();
+                            await cpc.addAnonimous();
+                          },
+                        ),
+                      ),
+                      // onPressed: () => ,
                     ),
                   ),
                 ),

@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import 'package:tcc_project/models/usergroup_model.dart';
 import 'package:tcc_project/pages/user_group/pages/crud_expenses/crud_expenses_controller.dart';
+import 'package:tcc_project/utils/util.dart';
 import 'package:tcc_project/widgets/appbar_widget.dart';
 import 'package:flutter_masked_text/flutter_masked_text.dart';
 import 'package:tcc_project/widgets/default_loading_widget.dart';
@@ -194,6 +196,18 @@ class CrudExpensesPage extends GetView<CrudExpensesController> {
                         ),
                       ),
                       Container(
+                        width: 75,
+                        child: Align(
+                          alignment: Alignment.centerRight,
+                          child: Text(
+                            "Valor \n(R\$)",
+                            style:
+                                GoogleFonts.roboto(fontWeight: FontWeight.w500),
+                          ),
+                        ),
+                      ),
+                      Container(width: 20),
+                      Container(
                         width: 40,
                         child: Align(
                           alignment: Alignment.centerRight,
@@ -204,18 +218,6 @@ class CrudExpensesPage extends GetView<CrudExpensesController> {
                           ),
                         ),
                       ),
-                      Container(width: 20),
-                      Container(
-                        width: 75,
-                        child: Align(
-                          alignment: Alignment.centerRight,
-                          child: Text(
-                            "Valor \n(R\$)",
-                            style:
-                                GoogleFonts.roboto(fontWeight: FontWeight.w500),
-                          ),
-                        ),
-                      )
                     ],
                   ),
                 ),
@@ -231,14 +233,35 @@ class CrudExpensesPage extends GetView<CrudExpensesController> {
                           Container(
                             width: 130,
                             child: Text(
-                              controller.peoples[index]["userGroup"]["user"] !=
-                                      null
-                                  ? controller.peoples[index]["userGroup"]
-                                      ["user"]["name"]
-                                  : "Anônimo ${controller.peoples[index]["userGroup"]["id"]}",
+                              Util.getUserGroupName(
+                                UserGroupModel.fromMap(
+                                    controller.peoples[index]["userGroup"]),
+                              ),
                               style: TextStyle(fontSize: 14),
                             ),
                           ),
+                          Container(
+                            width: 75,
+                            child: TextField(
+                              enabled: controller.canChange,
+                              onChanged: (value) {
+                                controller.onChangeDynamicPrice(
+                                  index,
+                                  double.parse(
+                                    controller.editsPrice[index].text
+                                        .replaceAll(".", "")
+                                        .replaceAll(",", "."),
+                                  ),
+                                );
+                              },
+                              textAlign: TextAlign.end,
+                              keyboardType: TextInputType.number,
+                              controller: controller.editsPrice[index],
+                              style: TextStyle(fontSize: 13),
+                              decoration: InputDecoration(counterText: ""),
+                            ),
+                          ),
+                          Container(width: 20),
                           Container(
                             width: 40,
                             child: TextField(
@@ -259,28 +282,6 @@ class CrudExpensesPage extends GetView<CrudExpensesController> {
                               style: TextStyle(fontSize: 13),
                               decoration: InputDecoration(counterText: ""),
                               maxLength: 6,
-                            ),
-                          ),
-                          Container(width: 20),
-                          Container(
-                            width: 75,
-                            child: TextField(
-                              enabled: controller.canChange,
-                              onChanged: (value) {
-                                controller.onChangeDynamicPrice(
-                                  index,
-                                  double.parse(
-                                    controller.editsPrice[index].text
-                                        .replaceAll(".", "")
-                                        .replaceAll(",", "."),
-                                  ),
-                                );
-                              },
-                              textAlign: TextAlign.end,
-                              keyboardType: TextInputType.number,
-                              controller: controller.editsPrice[index],
-                              style: TextStyle(fontSize: 13),
-                              decoration: InputDecoration(counterText: ""),
                             ),
                           ),
                         ],

@@ -32,18 +32,20 @@ class UserGroupController extends GetxController {
       group.description = "";
       group.sharedKey = Uuid().v1();
       group.title = "Grupo do ${this.user.name}";
+      group.closed = false;
 
       Response result = await _service.saveGroup(group.toMap());
       if (result.statusCode == 200) {
         GroupModel group = GroupModel.fromMap(result.data);
-        this.groups.add(group.toMap());
         UserGroupModel userGroupModel = UserGroupModel();
         userGroupModel.admin = true;
         userGroupModel.receptor = true;
         userGroupModel.group = group;
         userGroupModel.user = this.user;
         result = await _userGroupService.save(userGroupModel.toMap());
+
         if (result.statusCode == 200) {
+          this.groups.add(result.data);
           Get.toNamed(Routes.USER_GROUP_CRUD, arguments: {
             "user": this.user.toMap(),
             "group": group.toMap(),

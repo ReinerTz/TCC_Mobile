@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:dio/dio.dart';
-import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tcc_project/models/expense_model.dart';
 import 'package:tcc_project/models/group_model.dart';
@@ -13,6 +13,7 @@ import 'package:tcc_project/services/friendship_service.dart';
 import 'package:tcc_project/services/group_service.dart';
 import 'package:tcc_project/services/userexpense_service.dart';
 import 'package:tcc_project/services/usergroup_service.dart';
+import 'package:tcc_project/utils/util.dart';
 
 enum Screen { peoples, expenses }
 
@@ -24,6 +25,8 @@ class UserGroupCrudController extends GetxController {
   UserGroupService _serviceUG = UserGroupService();
   UserExpenseService _serviceUE = UserExpenseService();
   ExpenseService _serviceEx = ExpenseService();
+  Rx<File> paymentFile = File("").obs;
+  RxString observation = "".obs;
 
   RxList<dynamic> peoples = <dynamic>[].obs;
   RxList<dynamic> expenses = <dynamic>[].obs;
@@ -51,6 +54,8 @@ class UserGroupCrudController extends GetxController {
             (data["admin"])))
         .toList()
         .isNotEmpty;
+
+    observation.value = this.getActualUserGroup().paymentObservation;
   }
 
   void generateList(int qtd) {
@@ -78,13 +83,9 @@ class UserGroupCrudController extends GetxController {
 
   Future updateProfileImage(File image) async {
     this.isLoading.value = true;
-    StorageTaskSnapshot snapshot = await FirebaseStorage.instance
-        .ref()
-        .child("images/group/${this.group.value.id}")
-        .putFile(image)
-        .onComplete;
 
-    this.group.value.avatar = await snapshot.ref.getDownloadURL();
+    this.group.value.avatar = await Util.uploadImageFirebase(
+        image, "images/group/${this.group.value.id}");
 
     this.avatar.value = this.group.value.avatar;
     bool ok = await saveGroup();
@@ -210,5 +211,98 @@ class UserGroupCrudController extends GetxController {
             (data["userGroup"]["user"] != null) &&
             (data["userGroup"]["user"]["uid"] == user.uid))
         .toList();
+  }
+
+  Future closeExpenses() async {
+    this.isLoading.value = true;
+    try {
+      this.group.value.closed = true;
+      Response response = await _service.saveGroup(this.group.value.toMap());
+      if (response.statusCode == 200) {
+        Get.defaultDialog(
+          middleText: "Conta fechada com sucesso",
+          title: "Informação",
+          confirm: MaterialButton(
+            color: Get.theme.primaryColor,
+            child: Text("Ok"),
+            onPressed: () => Get.back(),
+          ),
+        );
+      }
+    } finally {
+      this.isLoading.value = false;
+    }
+  }
+
+  UserGroupModel getActualUserGroup() {
+    return UserGroupModel.fromMap(
+      this.peoples.firstWhere(
+            (data) => (data["user"] != null &&
+                (data["user"]["uid"] == this.user.uid)),
+          ),
+    );
+  }
+
+  int getUserGroupIndex() {
+    for (int i = 0; i < this.peoples.length; i++) {
+      if ((this.peoples[i]["user"] != null) &&
+          (this.peoples[i]["user"]["uid"] == this.user.uid)) {
+        return i;
+      }
+    }
+    return 0;
+  }
+
+  void setFile(File file) => this.paymentFile.value = file;
+
+  void setObservation(String value) => this.observation.value = value;
+
+  Future confirmPayment() async {
+    this.isLoading.value = true;
+    try {
+      Get.back();
+
+      if (this.observation.value.replaceAll(" ", "").isEmpty ||
+          (this.paymentFile.value.path.isEmpty)) {
+        Get.defaultDialog(
+            title: "Aviso",
+            middleText:
+                "Você deve informar uma observação ou adicionar um comprovante para confirmar o pagamento");
+      } else {
+        int index = getUserGroupIndex();
+        this.peoples[index]["paymentPicture"] = await Util.uploadImageFirebase(
+            this.paymentFile.value, "images/group/user/${this.user.uid}");
+        this.peoples[index]["paymentObservation"] = this.observation.value;
+        Response response = await _serviceUG.save(this.peoples[index]);
+        if (response.statusCode == 200) {
+          Get.defaultDialog(
+              title: "Aviso",
+              middleText:
+                  "Pagamento confirmado com sucesso, aguarde a aprovação do administrador do grupo.",
+              confirm: MaterialButton(
+                color: Get.theme.primaryColor,
+                child: Text("Ok"),
+                onPressed: () => Get.back(),
+              ));
+        }
+      }
+    } finally {
+      this.isLoading.value = false;
+    }
+  }
+
+  Future setUserGroupAsPaid(dynamic data) async {
+    data["paid"] = true;
+    Response response = await _serviceUG.save(data);
+    if (response.statusCode == 200) {
+      Get.defaultDialog(
+        title: "Informação",
+        middleText: "Conta paga com sucesso",
+        confirm: MaterialButton(
+          onPressed: () => Get.back(),
+          child: Text("Ok"),
+        ),
+      );
+    }
   }
 }

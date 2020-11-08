@@ -83,13 +83,19 @@ class HomePage extends GetWidget<HomeController> {
                 height: Get.mediaQuery.size.height * .75,
                 left: 5,
                 right: 5,
-                child: Obx(
-                  () => ListView(
+                child: Obx(() {
+                  if (homeController.listItems.isEmpty) {
+                    return Center(
+                      child: Text("Você ainda não teve nenhuma despesa"),
+                    );
+                  }
+
+                  return ListView(
                     children: homeController.listItems.map((data) {
                       return _buildHistoricItem(data: data);
                     }).toList(),
-                  ),
-                ),
+                  );
+                }),
               ),
               Positioned(
                 bottom: 0 + Get.mediaQuery.padding.bottom,

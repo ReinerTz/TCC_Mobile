@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter_masked_text/flutter_masked_text.dart';
 import 'package:get/get.dart';
 import 'package:tcc_project/models/expense_model.dart';
+import 'package:tcc_project/models/group_model.dart';
 import 'package:tcc_project/models/user_model.dart';
 import 'package:tcc_project/pages/user_group/pages/crud/user_group_crud_controller.dart';
 import 'package:tcc_project/services/expense_service.dart';
@@ -15,6 +16,7 @@ class CrudExpensesController extends GetxController {
   ExpenseService _service = ExpenseService();
   UserExpenseService _serviceUE = UserExpenseService();
   Rx<ExpenseModel> expense = ExpenseModel().obs;
+  GroupModel group = GroupModel();
   RxList<dynamic> peoples = <dynamic>[].obs;
   List editsPrice;
   List editsPercent;
@@ -25,6 +27,7 @@ class CrudExpensesController extends GetxController {
     this.user = UserModel.fromMap(pageArgs["user"]);
     this.peoples.value = pageArgs["peoples"];
     this.expense.value = pageArgs["expense"];
+    this.group = GroupModel.fromMap(pageArgs["group"]);
 
     editsPrice = List.generate(
       this.peoples.length,
@@ -42,16 +45,17 @@ class CrudExpensesController extends GetxController {
   }
 
   bool get canChange =>
-      this
-          .peoples
-          .where((data) => ((data["userGroup"]["user"] != null) &&
-              (data["userGroup"]["user"]["uid"] == user.uid) &&
-              (data["userGroup"]["admin"])))
-          .toList()
-          .isNotEmpty ||
-      ((this.expense.value.createdBy) != null &&
-          (this.expense.value.createdBy.uid == user.uid)) ||
-      this.expense.value.id == null;
+      (this.group.closed == null || !this.group.closed) &&
+      (this
+              .peoples
+              .where((data) => ((data["userGroup"]["user"] != null) &&
+                  (data["userGroup"]["user"]["uid"] == user.uid) &&
+                  (data["userGroup"]["admin"])))
+              .toList()
+              .isNotEmpty ||
+          ((this.expense.value.createdBy) != null &&
+              (this.expense.value.createdBy.uid == user.uid)) ||
+          this.expense.value.id == null);
 
   double get total => this.expense.value.price * this.expense.value.quantity;
 
@@ -194,8 +198,8 @@ class CrudExpensesController extends GetxController {
         this.peoples[i]["percent"] = 0;
         (this.editsPercent[i] as MoneyMaskedTextController).updateValue(0);
       } else {
-        this.peoples[i]["percent"] =
-            (((this.total / peoplesToSplit) * 100) / total).roundToDouble();
+        this.peoples[i]["percent"] = double.parse(
+            (((this.total / peoplesToSplit) * 100) / total).toStringAsFixed(2));
         (this.editsPercent[i] as MoneyMaskedTextController)
             .updateValue(this.peoples[i]["percent"]);
       }

@@ -60,7 +60,7 @@ class UserGroupPage extends GetWidget<UserGroupController> {
                       padding: const EdgeInsets.all(4),
                       child: ListTile(
                         leading: _buildUserAvatar(image: data["avatar"] ?? ""),
-                        title: Text(data["title"]),
+                        title: Text(data["title"] ?? ""),
                       ),
                     ),
                   ),
@@ -76,16 +76,18 @@ class UserGroupPage extends GetWidget<UserGroupController> {
           title: "Meus grupos",
         ),
         backgroundColor: Get.theme.primaryColor,
-        floatingActionButton: FloatingActionButton(
-          backgroundColor: Colors.white,
-          onPressed: () {
-            ugc.createGroup();
-          },
-          child: Icon(
-            Icons.add,
-            color: Colors.black,
-          ),
-        ),
+        floatingActionButton: ugc.loading.value
+            ? null
+            : FloatingActionButton(
+                backgroundColor: Colors.white,
+                onPressed: () async {
+                  await ugc.createGroup();
+                },
+                child: Icon(
+                  Icons.add,
+                  color: Colors.black,
+                ),
+              ),
         body: SingleChildScrollView(
           child: _buildTiles(),
         ));

@@ -12,6 +12,7 @@ class GroupModel {
     this.description,
     this.sharedKey,
     this.createdAt,
+    this.closed,
   });
 
   int id;
@@ -20,6 +21,7 @@ class GroupModel {
   String description;
   String sharedKey;
   DateTime createdAt;
+  bool closed;
 
   factory GroupModel.fromJson(String str) =>
       GroupModel.fromMap(json.decode(str));
@@ -35,6 +37,7 @@ class GroupModel {
         createdAt: json["createdAt"] == null
             ? null
             : DateTime.parse(json["createdAt"]),
+        closed: json["closed"] == null ? null : json["closed"],
       );
 
   Map<String, dynamic> toMap() => {
@@ -46,5 +49,6 @@ class GroupModel {
         "createdAt": createdAt == null
             ? null
             : "${createdAt.year.toString().padLeft(4, '0')}-${createdAt.month.toString().padLeft(2, '0')}-${createdAt.day.toString().padLeft(2, '0')}",
+        "closed": closed == null ? null : closed,
       };
 }

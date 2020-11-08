@@ -10,7 +10,9 @@ class CrudPeoplesController extends GetxController {
   UserModel user;
   RxList<dynamic> peoples = [].obs;
   RxList<dynamic> friends = [].obs;
+  RxBool loading = false.obs;
   dynamic group = [].obs;
+  String anonimousName;
   UserGroupService _userGroupService = UserGroupService();
   final ugcc = Get.find<UserGroupCrudController>();
 
@@ -21,28 +23,37 @@ class CrudPeoplesController extends GetxController {
     this.group = pageArgs["group"];
   }
 
+  void setAnonimousName(String value) => anonimousName = value;
+
   Future addAnonimous() async {
     if (group != null) {
-      UserGroupModel userGroupModel = UserGroupModel();
-      userGroupModel.admin = false;
-      userGroupModel.receptor = false;
-      userGroupModel.group = group;
+      loading.value = true;
+      try {
+        UserGroupModel userGroupModel = UserGroupModel();
+        userGroupModel.admin = false;
+        userGroupModel.receptor = false;
+        userGroupModel.group = group;
+        userGroupModel.name = anonimousName;
 
-      Response response = await _userGroupService.save(userGroupModel.toMap());
-      if (response.statusCode == 200) {
-        Get.defaultDialog(
-          title: "Informação",
-          middleText: "Usuário Anônimo adicionado com sucesso",
-          backgroundColor: Colors.white,
-          confirm: MaterialButton(
-            color: Get.theme.primaryColor,
-            child: Text("Ok"),
-            onPressed: () => Get.back(),
-          ),
-        );
+        Response response =
+            await _userGroupService.save(userGroupModel.toMap());
+        if (response.statusCode == 200) {
+          Get.defaultDialog(
+            title: "Informação",
+            middleText: "Usuário Anônimo adicionado com sucesso",
+            backgroundColor: Colors.white,
+            confirm: MaterialButton(
+              color: Get.theme.primaryColor,
+              child: Text("Ok"),
+              onPressed: () => Get.back(),
+            ),
+          );
 
-        ugcc.peoples.add(response.data);
-        this.peoples = ugcc.peoples;
+          ugcc.peoples.add(response.data);
+          this.peoples = ugcc.peoples;
+        }
+      } finally {
+        loading.value = false;
       }
     } else {
       throw Exception("O grupo deve estar preenchido");

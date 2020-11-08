@@ -1,7 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
-import 'package:tcc_project/models/user_model.dart';
 import 'package:tcc_project/routes/app_routes.dart';
 import 'package:tcc_project/services/sign_in_service.dart';
 import 'package:tcc_project/services/user_service.dart';
@@ -23,6 +22,7 @@ class LoginController extends GetxController {
 
   @override
   void onInit() {
+    super.onInit();
     FirebaseAuth.instance.onAuthStateChanged.listen((user) async {
       this.loading.value = true;
       update();
