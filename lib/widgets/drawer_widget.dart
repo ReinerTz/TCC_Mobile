@@ -9,8 +9,9 @@ import 'package:tcc_project/widgets/custom_list_tile_widget.dart';
 
 class DrawerWidget extends StatefulWidget {
   final UserModel userModel;
+  final List<dynamic> userExpensesModel;
   final int actualPage;
-  DrawerWidget(this.userModel, this.actualPage);
+  DrawerWidget(this.userModel, this.actualPage, this.userExpensesModel);
 
   @override
   _DrawerWidgetState createState() => _DrawerWidgetState();
@@ -51,23 +52,23 @@ class _DrawerWidgetState extends State<DrawerWidget> {
             title: "Home",
             actualPage: widget.actualPage,
             page: 0,
-            arguments: {"user": widget.userModel.toMap()},
+            arguments: {
+              "user": widget.userModel.toMap(),
+              "userexpenses": widget.userExpensesModel,
+            },
             route: Routes.HOME,
           ),
-
           CustomListTileWidget(
             icon: Icons.account_circle,
             title: "Perfil",
             actualPage: widget.actualPage,
             page: 1,
-            arguments: {"user": widget.userModel},
+            arguments: {
+              "user": widget.userModel,
+              "userexpenses": widget.userExpensesModel,
+            },
             route: Routes.PROFILE,
           ),
-
-          // CustomListTileWidget(
-          //     Icons.account_circle, "Home", widget.actualPage, 0, Routes.HOME),
-          // CustomListTileWidget(Icons.account_circle, "Perfil",
-          //     widget.actualPage, 1, Routes.PROFILE),
           ListTile(
             onTap: () {
               FirebaseAuth.instance.signOut();

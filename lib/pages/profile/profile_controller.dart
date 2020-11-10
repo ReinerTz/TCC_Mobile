@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tcc_project/models/user_model.dart';
 import 'package:tcc_project/services/user_service.dart';
@@ -8,11 +9,13 @@ import 'package:tcc_project/services/user_service.dart';
 class ProfileController extends GetxController {
   RxString avatar = "".obs;
   RxBool isLoading = false.obs;
+  List<dynamic> userExpenses;
 
   UserModel user;
   ProfileController({Map pageArgs}) {
     if (pageArgs != null) {
       this.user = pageArgs["user"];
+      this.userExpenses = pageArgs["userexpenses"];
     }
 
     if (this.user != null) {
@@ -37,13 +40,21 @@ class ProfileController extends GetxController {
       Get.defaultDialog(
         title: "Sucesso",
         middleText: "Foto adicionada com sucesso!",
-        onConfirm: () => Get.back(),
+        confirm: MaterialButton(
+          onPressed: () => Get.back,
+          child: Text("Ok"),
+          color: Get.theme.primaryColor,
+        ),
       );
     } else {
       Get.defaultDialog(
         title: "Erro",
         middleText: "Ocorreu um erro ao adicionar a foto",
-        onConfirm: () => print("dont work"),
+        confirm: MaterialButton(
+          onPressed: () => Get.back,
+          child: Text("Ok"),
+          color: Get.theme.primaryColor,
+        ),
       );
     }
     this.isLoading.value = false;

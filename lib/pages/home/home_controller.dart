@@ -39,6 +39,7 @@ class HomeController extends GetxController {
   }
 
   void _buildListItems() {
+    // ignore: invalid_use_of_protected_member
     if (this.userExpenses.value != null) {
       loading.value = true;
 

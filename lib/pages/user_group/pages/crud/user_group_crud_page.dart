@@ -13,7 +13,7 @@ import 'package:tcc_project/routes/app_routes.dart';
 import 'package:tcc_project/utils/util.dart';
 import 'package:tcc_project/widgets/default_loading_widget.dart';
 
-class UserGroupCrudPage extends GetWidget<UserGroupCrudController> {
+class UserGroupCrudPage extends GetView<UserGroupCrudController> {
   final ugcc = Get.find<UserGroupCrudController>();
   final textEditing = TextEditingController();
   final editTitle = TextEditingController();
@@ -75,9 +75,110 @@ class UserGroupCrudPage extends GetWidget<UserGroupCrudController> {
       );
     }
 
+    Widget _buildPaymentImage(String pic, String description) {
+      if (ugcc.isLoading.value) {
+        return DefaultLoadingWidget();
+      }
+
+      if (ugcc.paymentFile.value.path != "") {
+        return Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Image.file(ugcc.paymentFile.value,
+              fit: BoxFit.fill,
+              height: Get.mediaQuery.size.height * .4,
+              width: double.infinity),
+        );
+      }
+
+      if (pic.isEmpty) {
+        return Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Container(
+            decoration: BoxDecoration(border: Border.all()),
+            height: Get.mediaQuery.size.height * .4,
+            width: double.infinity,
+            child: Center(
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  description,
+                  style: TextStyle(fontSize: 30),
+                ),
+              ),
+            ),
+          ),
+        );
+      } else {
+        return Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Container(
+            decoration: BoxDecoration(border: Border.all()),
+            child: Image.network(pic,
+                fit: BoxFit.fill,
+                height: Get.mediaQuery.size.height * .4,
+                width: double.infinity),
+          ),
+        );
+      }
+    }
+
+    // ignore: missing_return
+    Widget _confirmUserPayment(dynamic data) {
+      Get.dialog(
+        Card(
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                Align(
+                  alignment: Alignment.topRight,
+                  child: IconButton(
+                    icon: Icon(Icons.close),
+                    onPressed: () => Get.back(),
+                  ),
+                ),
+                SizedBox(
+                  height: 15,
+                ),
+                _buildPaymentImage(
+                    data["paymentPicture"], "Sem comprovante de pagamento"),
+                Padding(
+                  padding: const EdgeInsets.all(8),
+                  child: TextFormField(
+                    initialValue: data["paymentObservation"],
+                    keyboardType: TextInputType.multiline,
+                    maxLines: 6,
+                    decoration: InputDecoration(
+                      labelText: "Observação",
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
+                ),
+                Align(
+                  alignment: Alignment.bottomCenter,
+                  child: Container(
+                    child: MaterialButton(
+                      color: Get.theme.primaryColor,
+                      child: Text("Confirmar pagamento"),
+                      onPressed: () => ugcc.setUserGroupAsPaid(data),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+
     Widget _buildTrailingPeopleButton(dynamic data) {
       if (data["paid"]) {
-        return Text("Pago");
+        return Text(
+          "Pago",
+          style: TextStyle(
+              color: Colors.lightGreen,
+              fontSize: 16,
+              fontWeight: FontWeight.w700),
+        );
       }
 
       if (ugcc.isAdmin) {
@@ -99,7 +200,7 @@ class UserGroupCrudPage extends GetWidget<UserGroupCrudController> {
                     color: Colors.grey,
                   ),
                   confirm: MaterialButton(
-                    onPressed: () => null,
+                    onPressed: () => ugcc.setUserGroupAsPaid(data),
                     child: Text("Sim"),
                     color: Get.theme.primaryColor,
                   ),
@@ -110,7 +211,7 @@ class UserGroupCrudPage extends GetWidget<UserGroupCrudController> {
             return IconButton(
               icon: Icon(Icons.notifications_active_outlined,
                   color: Get.theme.primaryColor),
-              onPressed: () => null,
+              onPressed: () => _confirmUserPayment(data),
             );
           }
         } else {
@@ -151,25 +252,6 @@ class UserGroupCrudPage extends GetWidget<UserGroupCrudController> {
                 subtitle: Text(
                     "R\$ ${ugcc.getTotalByPeople(data["id"]).toStringAsFixed(2)}"),
                 trailing: _buildTrailingPeopleButton(data),
-                // (ugcc.group.value.closed != null && ugcc.group.value.closed)
-                //     ? ugcc.isAdmin
-                //         ? IconButton(
-                //             icon: Icon(Icons.notifications_active_outlined,
-                //                 color: Get.theme.primaryColor),
-                //             onPressed: () => null,
-                //           )
-                //         : null
-                //     : ((ugcc.isAdmin) &&
-                //             ((data["user"] == null) ||
-                //                 (data["user"]["uid"] != ugcc.user.uid)))
-                //         ? IconButton(
-                //             icon: Icon(
-                //               Icons.clear,
-                //               color: Colors.red,
-                //             ),
-                //             onPressed: () => ugcc.deleteUserGroup(data),
-                //           )
-                //         : null,
               ),
             ),
           );
@@ -340,53 +422,6 @@ class UserGroupCrudPage extends GetWidget<UserGroupCrudController> {
       ));
     }
 
-    Widget _buildPaymentImage(String pic) {
-      if (ugcc.isLoading.value) {
-        return DefaultLoadingWidget();
-      }
-
-      if (ugcc.paymentFile.value.path != "") {
-        return Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Image.file(ugcc.paymentFile.value,
-              fit: BoxFit.fill,
-              height: Get.mediaQuery.size.height * .4,
-              width: double.infinity),
-        );
-      }
-
-      if (pic.isEmpty) {
-        return Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Container(
-            decoration: BoxDecoration(border: Border.all()),
-            height: Get.mediaQuery.size.height * .4,
-            width: double.infinity,
-            child: Center(
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text(
-                  "Clique aqui para adicione uma foto do comprovante de pagamento",
-                  style: TextStyle(fontSize: 30),
-                ),
-              ),
-            ),
-          ),
-        );
-      } else {
-        return Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Container(
-            decoration: BoxDecoration(border: Border.all()),
-            child: Image.network(pic,
-                fit: BoxFit.fill,
-                height: Get.mediaQuery.size.height * .4,
-                width: double.infinity),
-          ),
-        );
-      }
-    }
-
     // ignore: missing_return
     Widget _buildPaymentConfirm() {
       UserGroupModel user = ugcc.getActualUserGroup();
@@ -418,7 +453,8 @@ class UserGroupCrudPage extends GetWidget<UserGroupCrudController> {
                       _buildPaymentConfirm();
                     }
                   },
-                  child: _buildPaymentImage(user.paymentPicture ?? ""),
+                  child: _buildPaymentImage(user.paymentPicture ?? "",
+                      "Clique aqui para adicione uma foto do comprovante de pagamento"),
                 ),
                 Padding(
                   padding: const EdgeInsets.all(8),
@@ -454,41 +490,50 @@ class UserGroupCrudPage extends GetWidget<UserGroupCrudController> {
     }
 
     Widget _rightBottomButton() {
-      if (ugcc.group.value.closed) {
-        return Padding(
-          padding: const EdgeInsets.only(right: 8),
-          child: MaterialButton(
-            color: Get.theme.primaryColor,
-            onPressed: () => _buildPaymentConfirm(),
-            child: Text("Confirmar pagamento"),
-          ),
-        );
-      } else {
-        return Padding(
-          padding: const EdgeInsets.only(right: 8),
-          child: MaterialButton(
-            color: Get.theme.primaryColor,
-            onPressed: () => Get.defaultDialog(
-              middleText: "Deseja realmente finalizar a conta?",
-              title: "Confirme",
-              confirm: MaterialButton(
+      return Obx(() {
+        if (ugcc.group.value.closed) {
+          if (!ugcc.getActualUserGroup().paid) {
+            return Padding(
+              padding: const EdgeInsets.only(right: 8),
+              child: MaterialButton(
                 color: Get.theme.primaryColor,
-                child: Text("Sim"),
-                onPressed: () async {
-                  Get.back();
-                  await ugcc.closeExpenses();
-                },
+                onPressed: () => _buildPaymentConfirm(),
+                child: Text("Confirmar pagamento"),
               ),
-              cancel: MaterialButton(
-                color: Colors.grey,
-                child: Text("Não"),
-                onPressed: () => Get.back(),
+            );
+          }
+        } else {
+          return Padding(
+            padding: const EdgeInsets.only(right: 8),
+            child: MaterialButton(
+              color: Get.theme.primaryColor,
+              onPressed: () => Get.defaultDialog(
+                middleText: "Deseja realmente finalizar a conta?",
+                title: "Confirme",
+                confirm: MaterialButton(
+                  color: Get.theme.primaryColor,
+                  child: Text("Sim"),
+                  onPressed: () async {
+                    Get.back();
+                    await ugcc.closeExpenses();
+                  },
+                ),
+                cancel: MaterialButton(
+                  color: Colors.grey,
+                  child: Text("Não"),
+                  onPressed: () => Get.back(),
+                ),
               ),
+              child: Text("Finalizar a conta"),
             ),
-            child: Text("Finalizar a conta"),
-          ),
+          );
+        }
+
+        return Container(
+          height: 0,
+          width: 0,
         );
-      }
+      });
     }
 
     return Scaffold(
@@ -496,7 +541,7 @@ class UserGroupCrudPage extends GetWidget<UserGroupCrudController> {
       bottomNavigationBar: BottomAppBar(
         shape: CircularNotchedRectangle(),
         notchMargin: 4.0,
-        child: new Row(
+        child: Row(
           mainAxisSize: MainAxisSize.max,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
@@ -545,150 +590,153 @@ class UserGroupCrudPage extends GetWidget<UserGroupCrudController> {
                 child: Icon(Icons.add, color: Colors.black),
               ),
       ),
-      body: NestedScrollView(
-        headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
-          return <Widget>[
-            SliverAppBar(
-              floating: true,
-              backgroundColor: Colors.black54,
-              title: Text("Grupo"),
-              flexibleSpace: Center(
-                child: _buildImage(),
-              ),
-              bottom: PreferredSize(
-                child: Padding(
-                  padding: const EdgeInsets.all(12),
-                  child: Obx(
-                    () => Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              ugcc.group.value.title.length > 22
-                                  ? ugcc.group.value.title.substring(0, 22) +
-                                      "..."
-                                  : ugcc.group.value.title,
-                              style: GoogleFonts.roboto(
-                                  fontSize: 22, color: Colors.white),
-                            ),
-                            Text(
-                              "Criação em: ${DateFormat('dd/MM/yyyy').format(ugcc.group.value.createdAt)}",
-                              style: GoogleFonts.roboto(
-                                  fontSize: 12, color: Colors.white),
-                            ),
-                          ],
-                        ),
-                        IconButton(
-                          icon: Icon(
-                            Icons.edit,
-                            color: Colors.white,
-                          ),
-                          onPressed: () => Get.toNamed(Routes.CRUD_TITLE,
-                              arguments: {"group": ugcc.group.value}),
-                        ),
-                      ],
-                    ),
-                  ),
+      body: RefreshIndicator(
+        onRefresh: () async => await ugcc.refreshData(),
+        child: NestedScrollView(
+          headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
+            return <Widget>[
+              SliverAppBar(
+                floating: true,
+                backgroundColor: Colors.black54,
+                title: Text("Grupo"),
+                flexibleSpace: Center(
+                  child: _buildImage(),
                 ),
-                preferredSize: Size.fromHeight(175),
-              ),
-            ),
-          ];
-        },
-        body: SingleChildScrollView(
-          child: Obx(() {
-            if (ugcc.isLoading.value) {
-              return Container(
-                height: Get.mediaQuery.size.height * .5,
-                decoration: BoxDecoration(color: Get.theme.primaryColor),
-                child: Center(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text("Carregando..."),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      LinearProgressIndicator()
-                    ],
-                  ),
-                ),
-              );
-            }
-            return Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Center(
-                    child: Container(
-                      width: Get.mediaQuery.size.width * .6,
-                      child: Row(
+                bottom: PreferredSize(
+                  child: Padding(
+                    padding: const EdgeInsets.all(12),
+                    child: Obx(
+                      () => Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          GestureDetector(
-                            onTap: () =>
-                                ugcc.actualScreen.value = Screen.peoples,
-                            child: Container(
-                              decoration:
-                                  ugcc.actualScreen.value == Screen.peoples
-                                      ? BoxDecoration(
-                                          border: Border(
-                                            bottom: BorderSide(
-                                              color: Colors.white,
-                                            ),
-                                          ),
-                                        )
-                                      : BoxDecoration(),
-                              child: Text(
-                                "Pessoas: ${ugcc.peoples.length}",
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                ugcc.group.value.title.length > 22
+                                    ? ugcc.group.value.title.substring(0, 22) +
+                                        "..."
+                                    : ugcc.group.value.title,
                                 style: GoogleFonts.roboto(
-                                    color: Colors.white, fontSize: 19),
+                                    fontSize: 22, color: Colors.white),
                               ),
-                            ),
+                              Text(
+                                "Criação em: ${DateFormat('dd/MM/yyyy').format(ugcc.group.value.createdAt)}",
+                                style: GoogleFonts.roboto(
+                                    fontSize: 12, color: Colors.white),
+                              ),
+                            ],
                           ),
-                          GestureDetector(
-                            onTap: () =>
-                                ugcc.actualScreen.value = Screen.expenses,
-                            child: Container(
-                              decoration:
-                                  ugcc.actualScreen.value == Screen.expenses
-                                      ? BoxDecoration(
-                                          border: Border(
-                                            bottom: BorderSide(
-                                              color: Colors.white,
-                                            ),
-                                          ),
-                                        )
-                                      : BoxDecoration(),
-                              child: Text(
-                                "Despesas: ${ugcc.expenses.length}",
-                                style: GoogleFonts.roboto(
-                                    color: Colors.white, fontSize: 19),
-                              ),
+                          IconButton(
+                            icon: Icon(
+                              Icons.edit,
+                              color: Colors.white,
                             ),
+                            onPressed: () => Get.toNamed(Routes.CRUD_TITLE,
+                                arguments: {"group": ugcc.group.value}),
                           ),
                         ],
                       ),
                     ),
                   ),
-                  SizedBox(
-                    height: 15,
-                  ),
-                  Obx(() {
-                    if (ugcc.actualScreen.value == Screen.peoples) {
-                      return _buildPeoples();
-                    } else {
-                      return _buildExpenses();
-                    }
-                  }),
-                ],
+                  preferredSize: Size.fromHeight(175),
+                ),
               ),
-            );
-          }),
+            ];
+          },
+          body: SingleChildScrollView(
+            child: Obx(() {
+              if (ugcc.isLoading.value) {
+                return Container(
+                  height: Get.mediaQuery.size.height * .5,
+                  decoration: BoxDecoration(color: Get.theme.primaryColor),
+                  child: Center(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text("Carregando..."),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        LinearProgressIndicator()
+                      ],
+                    ),
+                  ),
+                );
+              }
+              return Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Center(
+                      child: Container(
+                        width: Get.mediaQuery.size.width * .6,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            GestureDetector(
+                              onTap: () =>
+                                  ugcc.actualScreen.value = Screen.peoples,
+                              child: Container(
+                                decoration:
+                                    ugcc.actualScreen.value == Screen.peoples
+                                        ? BoxDecoration(
+                                            border: Border(
+                                              bottom: BorderSide(
+                                                color: Colors.white,
+                                              ),
+                                            ),
+                                          )
+                                        : BoxDecoration(),
+                                child: Text(
+                                  "Pessoas: ${ugcc.peoples.length}",
+                                  style: GoogleFonts.roboto(
+                                      color: Colors.white, fontSize: 19),
+                                ),
+                              ),
+                            ),
+                            GestureDetector(
+                              onTap: () =>
+                                  ugcc.actualScreen.value = Screen.expenses,
+                              child: Container(
+                                decoration:
+                                    ugcc.actualScreen.value == Screen.expenses
+                                        ? BoxDecoration(
+                                            border: Border(
+                                              bottom: BorderSide(
+                                                color: Colors.white,
+                                              ),
+                                            ),
+                                          )
+                                        : BoxDecoration(),
+                                child: Text(
+                                  "Despesas: ${ugcc.expenses.length}",
+                                  style: GoogleFonts.roboto(
+                                      color: Colors.white, fontSize: 19),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      height: 15,
+                    ),
+                    Obx(() {
+                      if (ugcc.actualScreen.value == Screen.peoples) {
+                        return _buildPeoples();
+                      } else {
+                        return _buildExpenses();
+                      }
+                    }),
+                  ],
+                ),
+              );
+            }),
+          ),
         ),
       ),
     );

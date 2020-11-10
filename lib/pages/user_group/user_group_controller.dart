@@ -60,6 +60,15 @@ class UserGroupController extends GetxController {
     }
   }
 
+  Future<void> refreshData() async {
+    try {
+      this.loading.value = true;
+      this.groups.value = (await _service.getByUser(this.user.uid)).data;
+    } finally {
+      this.loading.value = false;
+    }
+  }
+
   Future route(dynamic data) async {
     loading.value = true;
     try {

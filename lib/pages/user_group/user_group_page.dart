@@ -27,6 +27,15 @@ class UserGroupPage extends GetWidget<UserGroupController> {
       );
     }
 
+    Widget _buildSubtitle(dynamic data) {
+      if (data["closed"]) {
+        return Text("Conta fechada!", style: TextStyle(color: Colors.red));
+      } else {
+        return Text("Conta aberta!",
+            style: TextStyle(color: Colors.lightGreen));
+      }
+    }
+
     Widget _buildTiles() {
       if (ugc.groups.isEmpty) {
         return Container(
@@ -61,6 +70,7 @@ class UserGroupPage extends GetWidget<UserGroupController> {
                       child: ListTile(
                         leading: _buildUserAvatar(image: data["avatar"] ?? ""),
                         title: Text(data["title"] ?? ""),
+                        subtitle: _buildSubtitle(data),
                       ),
                     ),
                   ),

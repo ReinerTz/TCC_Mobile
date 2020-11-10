@@ -82,10 +82,16 @@ class ProfilePage extends GetWidget<ProfileController> {
           );
         }
 
-        return Image.network(profileController.avatar.value,
-            fit: BoxFit.fill,
-            height: MediaQuery.of(context).size.width,
-            width: double.infinity);
+        return Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Container(
+            decoration: BoxDecoration(border: Border.all()),
+            child: Image.network(profileController.avatar.value,
+                fit: BoxFit.fill,
+                height: MediaQuery.of(context).size.width,
+                width: double.infinity),
+          ),
+        );
       });
     }
 
@@ -117,7 +123,8 @@ class ProfilePage extends GetWidget<ProfileController> {
     return SafeArea(
       child: Scaffold(
         appBar: AppBarWidget(),
-        drawer: DrawerWidget(profileController.user, 1),
+        drawer: DrawerWidget(
+            profileController.user, 1, profileController.userExpenses),
         body: Container(
           decoration: BoxDecoration(color: Theme.of(context).primaryColor),
           child: ListView(

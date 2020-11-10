@@ -8,6 +8,7 @@ import 'package:tcc_project/models/group_model.dart';
 import 'package:tcc_project/models/user_model.dart';
 import 'package:tcc_project/models/userexpense_model.dart';
 import 'package:tcc_project/models/usergroup_model.dart';
+import 'package:tcc_project/pages/user_group/user_group_controller.dart';
 import 'package:tcc_project/services/expense_service.dart';
 import 'package:tcc_project/services/friendship_service.dart';
 import 'package:tcc_project/services/group_service.dart';
@@ -20,21 +21,25 @@ enum Screen { peoples, expenses }
 class UserGroupCrudController extends GetxController {
   UserModel user;
   Rx<GroupModel> group = GroupModel().obs;
+
   GroupService _service = GroupService();
   FriendShipService _serviceFS = FriendShipService();
   UserGroupService _serviceUG = UserGroupService();
   UserExpenseService _serviceUE = UserExpenseService();
   ExpenseService _serviceEx = ExpenseService();
+
   Rx<File> paymentFile = File("").obs;
   RxString observation = "".obs;
-
+  RxBool closed = false.obs;
   RxList<dynamic> peoples = <dynamic>[].obs;
   RxList<dynamic> expenses = <dynamic>[].obs;
   RxList<dynamic> userExpenses = <dynamic>[].obs;
   Rx<Screen> actualScreen = Screen.peoples.obs;
   RxBool isLoading = false.obs;
   RxString avatar = "".obs;
-  bool isAdmin;
+  // bool isAdmin;
+
+  final ugc = Get.find<UserGroupController>();
 
   UserGroupCrudController({Map pageArgs}) {
     this.user = UserModel.fromMap(pageArgs["user"]);
@@ -47,16 +52,16 @@ class UserGroupCrudController extends GetxController {
       this.avatar.value = this.group.value.avatar;
     }
 
-    isAdmin = this
-        .peoples
-        .where((data) => ((data["user"] != null) &&
-            (data["user"]["uid"] == user.uid) &&
-            (data["admin"])))
-        .toList()
-        .isNotEmpty;
-
-    observation.value = this.getActualUserGroup().paymentObservation;
+    this.observation.value = this.getActualUserGroup().paymentObservation;
   }
+
+  bool get isAdmin => this
+      .peoples
+      .where((data) => ((data["user"] != null) &&
+          (data["user"]["uid"] == user.uid) &&
+          (data["admin"])))
+      .toList()
+      .isNotEmpty;
 
   void generateList(int qtd) {
     this.peoples.clear();
@@ -219,6 +224,8 @@ class UserGroupCrudController extends GetxController {
       this.group.value.closed = true;
       Response response = await _service.saveGroup(this.group.value.toMap());
       if (response.statusCode == 200) {
+        await ugc.refreshData();
+        this.group.value = GroupModel.fromMap(response.data);
         Get.defaultDialog(
           middleText: "Conta fechada com sucesso",
           title: "Informação",
@@ -230,6 +237,7 @@ class UserGroupCrudController extends GetxController {
         );
       }
     } finally {
+      update();
       this.isLoading.value = false;
     }
   }
@@ -287,22 +295,51 @@ class UserGroupCrudController extends GetxController {
         }
       }
     } finally {
+      update();
       this.isLoading.value = false;
     }
   }
 
   Future setUserGroupAsPaid(dynamic data) async {
-    data["paid"] = true;
-    Response response = await _serviceUG.save(data);
-    if (response.statusCode == 200) {
-      Get.defaultDialog(
-        title: "Informação",
-        middleText: "Conta paga com sucesso",
-        confirm: MaterialButton(
-          onPressed: () => Get.back(),
-          child: Text("Ok"),
-        ),
-      );
+    this.isLoading.value = true;
+    Get.back();
+    try {
+      data["paid"] = true;
+      Response response = await _serviceUG.save(data);
+      if (response.statusCode == 200) {
+        this.group.value = GroupModel.fromMap(this.group.value.toMap());
+        Get.defaultDialog(
+          title: "Informação",
+          middleText: "Conta paga com sucesso",
+          confirm: MaterialButton(
+            color: Get.theme.primaryColor,
+            onPressed: () => Get.back(),
+            child: Text("Ok"),
+          ),
+        );
+      }
+    } finally {
+      this.isLoading.value = false;
     }
+  }
+
+  Future refreshData() async {
+    try {
+      this.group.value = await _service.findById(this.group.value.id);
+      Response response = await _serviceEx.getByGroup(this.group.value.id);
+      if (response.statusCode == 200) {
+        this.expenses.value = response.data ?? List();
+        response = await _serviceUG.findAllUsersByGroup(this.group.value.id);
+        if (response.statusCode == 200) {
+          this.peoples.value = response.data;
+          response = await _serviceUE.findExpensesbyGroup(this.group.value.id);
+          this.userExpenses.value = response.data;
+        }
+      }
+    } finally {}
+    // this.group.value = GroupModel.fromMap(pageArgs["group"]);
+    // this.peoples.value = pageArgs["peoples"];
+    // this.expenses.value = pageArgs["expenses"];
+    // this.userExpenses.value = pageArgs["userexpense"];
   }
 }

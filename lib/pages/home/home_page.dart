@@ -69,7 +69,11 @@ class HomePage extends GetWidget<HomeController> {
     return SafeArea(
       child: Scaffold(
         appBar: AppBarWidget(),
-        drawer: DrawerWidget(homeController.user, 0),
+        drawer: DrawerWidget(
+            homeController.user,
+            0,
+            // ignore: invalid_use_of_protected_member
+            homeController.userExpenses.value),
         backgroundColor: Theme.of(context).primaryColor,
         body: Obx(() {
           if (homeController.loading.value) {
