@@ -16,7 +16,7 @@ import 'package:tcc_project/pages/friendshiplist/friendshiplist_page.dart';
 import 'package:tcc_project/pages/home/home_page.dart';
 import 'package:tcc_project/pages/login/login_page.dart';
 import 'package:tcc_project/pages/profile/profile_page.dart';
-import 'package:tcc_project/pages/profile_udpate/profile_update_page.dart';
+import 'package:tcc_project/pages/profile_update/profile_update_page.dart';
 import 'package:tcc_project/pages/profile_view/profile_view_page.dart';
 import 'package:tcc_project/pages/user_group/pages/crud/user_group_crud_page.dart';
 import 'package:tcc_project/pages/user_group/pages/crud_expenses/crud_expenses_page.dart';
