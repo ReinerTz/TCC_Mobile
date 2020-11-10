@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:tcc_project/pages/profile_udpate/profile_update_controller.dart';
+import 'package:tcc_project/pages/profile_update/profile_update_controller.dart';
 import 'package:tcc_project/routes/app_routes.dart';
 import 'package:tcc_project/widgets/default_loading_widget.dart';
 

@@ -336,10 +336,8 @@ class UserGroupCrudController extends GetxController {
           this.userExpenses.value = response.data;
         }
       }
-    } finally {}
-    // this.group.value = GroupModel.fromMap(pageArgs["group"]);
-    // this.peoples.value = pageArgs["peoples"];
-    // this.expenses.value = pageArgs["expenses"];
-    // this.userExpenses.value = pageArgs["userexpense"];
+    } finally {
+      return this.userExpenses;
+    }
   }
 }
