@@ -6,12 +6,15 @@ class AppBarWidget extends StatelessWidget with PreferredSizeWidget {
   @override
   final Size preferredSize;
   final String title;
+  final List<Widget> actions;
 
-  AppBarWidget({this.title = ""}) : preferredSize = Size.fromHeight(50.0);
+  AppBarWidget({this.title = "", this.actions})
+      : preferredSize = Size.fromHeight(50.0);
 
   @override
   Widget build(BuildContext context) {
     return AppBar(
+      actions: this.actions,
       title: this.title == ""
           ? Text(
               "DVDR",

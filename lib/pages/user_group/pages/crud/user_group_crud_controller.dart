@@ -38,7 +38,6 @@ class UserGroupCrudController extends GetxController {
   Rx<Screen> actualScreen = Screen.peoples.obs;
   RxBool isLoading = false.obs;
   RxString avatar = "".obs;
-  RxString textMessage = "".obs;
   // bool isAdmin;
 
   final ugc = Get.find<UserGroupController>();
@@ -56,8 +55,6 @@ class UserGroupCrudController extends GetxController {
 
     this.observation.value = this.getActualUserGroup().paymentObservation;
   }
-
-  void setTextMessage(String value) => this.textMessage.value = value;
 
   bool get isAdmin => this
       .peoples
@@ -346,7 +343,20 @@ class UserGroupCrudController extends GetxController {
     }
   }
 
-  void sendMessage() {
+  void sendMessage(String text) {
+    if (text.isNotEmpty) {
+      FirebaseFirestore.instance
+          .collection("group")
+          .firestore
+          .collection("${this.group.value.id}")
+          .add({"user": this.user.uid, "date": DateTime.now(), "text": text});
+    }
+  }
+
+  Future<void> sendMessageImage(File file) async {
+    String text = await Util.uploadImageFirebase(file,
+        "images/group/${this.group.value.id}/chat/${DateTime.now().millisecondsSinceEpoch}");
+
     FirebaseFirestore.instance
         .collection("group")
         .firestore
@@ -354,9 +364,8 @@ class UserGroupCrudController extends GetxController {
         .add({
       "user": this.user.uid,
       "date": DateTime.now(),
-      "text": this.textMessage.value
+      "text": null,
+      "image": text
     });
-
-    this.textMessage.value = "";
   }
 }

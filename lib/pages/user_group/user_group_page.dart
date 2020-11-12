@@ -82,9 +82,12 @@ class UserGroupPage extends GetWidget<UserGroupController> {
     }
 
     return Scaffold(
-        appBar: AppBarWidget(
-          title: "Meus grupos",
-        ),
+        appBar: AppBarWidget(title: "Meus grupos", actions: [
+          IconButton(
+            icon: Icon(Icons.refresh),
+            onPressed: () async => ugc.refreshData(),
+          ),
+        ]),
         backgroundColor: Get.theme.primaryColor,
         floatingActionButton: ugc.loading.value
             ? null

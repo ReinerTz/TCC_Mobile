@@ -15,12 +15,13 @@ import 'package:tcc_project/utils/util.dart';
 import 'package:tcc_project/widgets/default_loading_widget.dart';
 
 class UserGroupCrudPage extends GetView<UserGroupCrudController> {
-  final ugcc = Get.find<UserGroupCrudController>();
-  final textEditing = TextEditingController();
-  final editTitle = TextEditingController();
-  final editMessage = TextEditingController();
   final editDescription = TextEditingController();
+  final editMessage = TextEditingController();
+  final editTitle = TextEditingController();
   final pageController = PageController(initialPage: 0);
+  final textEditing = TextEditingController();
+  final ugcc = Get.find<UserGroupCrudController>();
+
   final _picker = ImagePicker();
 
   @override
@@ -554,6 +555,7 @@ class UserGroupCrudPage extends GetView<UserGroupCrudController> {
                       .collection("group")
                       .firestore
                       .collection("${ugcc.group.value.id}")
+                      .orderBy("date", descending: true)
                       .snapshots(),
                   builder: (context, snapshot) {
                     if ((snapshot.connectionState == ConnectionState.waiting) ||
@@ -592,12 +594,14 @@ class UserGroupCrudPage extends GetView<UserGroupCrudController> {
                                     ),
                                   ],
                                 ),
-                                child: Text(
-                                  data["text"],
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                  ),
-                                ),
+                                child: data["text"] != null
+                                    ? Text(
+                                        data["text"],
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                        ),
+                                      )
+                                    : Image.network(data["image"]),
                               ),
                             ),
                           );
@@ -608,7 +612,9 @@ class UserGroupCrudPage extends GetView<UserGroupCrudController> {
                               image: user["user"] == null
                                   ? ""
                                   : user["user"]["avatar"] ?? ""),
-                          title: Text(data["text"]),
+                          title: data["text"] != null
+                              ? Text(data["text"])
+                              : Image.network(data["image"]),
                           subtitle: Text(user["user"]["name"]),
                         );
                       }
@@ -625,15 +631,21 @@ class UserGroupCrudPage extends GetView<UserGroupCrudController> {
                 child: Row(
                   children: [
                     IconButton(
-                        icon: Icon(
-                          Icons.photo_camera,
-                          color: Get.theme.primaryColor,
-                        ),
-                        onPressed: () => null),
+                      icon: Icon(
+                        Icons.photo_camera,
+                        color: Get.theme.primaryColor,
+                      ),
+                      onPressed: () async {
+                        PickedFile image =
+                            await _picker.getImage(source: ImageSource.gallery);
+                        if (image != null) {
+                          ugcc.sendMessageImage(File(image.path));
+                        }
+                      },
+                    ),
                     Expanded(
                       child: TextField(
                         controller: editMessage,
-                        onChanged: ugcc.setTextMessage,
                         decoration: InputDecoration.collapsed(
                             hintText: 'Enviar uma mensagem'),
                       ),
@@ -641,18 +653,12 @@ class UserGroupCrudPage extends GetView<UserGroupCrudController> {
                     IconButton(
                         icon: Icon(
                           Icons.send,
-                          color:
-                              ugcc.textMessage.value.replaceAll(" ", "") == ""
-                                  ? Colors.grey
-                                  : Get.theme.primaryColor,
+                          color: Get.theme.primaryColor,
                         ),
-                        onPressed:
-                            ugcc.textMessage.value.replaceAll(" ", "") == ""
-                                ? null
-                                : () {
-                                    ugcc.sendMessage();
-                                    editMessage.text = "";
-                                  }),
+                        onPressed: () {
+                          ugcc.sendMessage(editMessage.text);
+                          editMessage.text = "";
+                        }),
                   ],
                 ),
               ),
@@ -664,27 +670,30 @@ class UserGroupCrudPage extends GetView<UserGroupCrudController> {
 
     return Scaffold(
       backgroundColor: Get.theme.primaryColor,
-      bottomNavigationBar: BottomAppBar(
-        shape: CircularNotchedRectangle(),
-        notchMargin: 4.0,
-        child: Row(
-          mainAxisSize: MainAxisSize.max,
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.only(left: 8),
-              // child: Text("Totalizador: "),
-              child: FlatButton(
-                color: Get.theme.primaryColor,
-                child: Text("Resumo"),
-                onPressed: () {
-                  _buildDialog();
-                },
+      bottomNavigationBar: Obx(
+        () => ugcc.actualScreen.value == Screen.chat
+            ? Container(height: 0, width: 0)
+            : BottomAppBar(
+                shape: CircularNotchedRectangle(),
+                notchMargin: 4.0,
+                child: Row(
+                  mainAxisSize: MainAxisSize.max,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    Padding(
+                      padding: const EdgeInsets.only(left: 8),
+                      child: FlatButton(
+                        color: Get.theme.primaryColor,
+                        child: Text("Resumo"),
+                        onPressed: () {
+                          _buildDialog();
+                        },
+                      ),
+                    ),
+                    _rightBottomButton(),
+                  ],
+                ),
               ),
-            ),
-            _rightBottomButton(),
-          ],
-        ),
       ),
       floatingActionButton: Obx(
         () => (ugcc.group.value.closed != null && ugcc.group.value.closed) ||
@@ -724,6 +733,12 @@ class UserGroupCrudPage extends GetView<UserGroupCrudController> {
               floating: true,
               backgroundColor: Colors.black54,
               title: Text("Grupo"),
+              actions: [
+                IconButton(
+                  icon: Icon(Icons.refresh),
+                  onPressed: () async => ugcc.refreshData(),
+                ),
+              ],
               flexibleSpace: Center(
                 child: _buildImage(),
               ),
@@ -784,74 +799,70 @@ class UserGroupCrudPage extends GetView<UserGroupCrudController> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Center(
-                    child: Container(
-                      width: Get.mediaQuery.size.width * .6,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          GestureDetector(
-                            onTap: () =>
-                                ugcc.actualScreen.value = Screen.peoples,
-                            child: Container(
-                              decoration:
-                                  ugcc.actualScreen.value == Screen.peoples
-                                      ? BoxDecoration(
-                                          border: Border(
-                                            bottom: BorderSide(
-                                              color: Colors.white,
-                                            ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        GestureDetector(
+                          onTap: () => ugcc.actualScreen.value = Screen.peoples,
+                          child: Container(
+                            decoration:
+                                ugcc.actualScreen.value == Screen.peoples
+                                    ? BoxDecoration(
+                                        border: Border(
+                                          bottom: BorderSide(
+                                            color: Colors.white,
                                           ),
-                                        )
-                                      : BoxDecoration(),
-                              child: Text(
-                                "Pessoas: ${ugcc.peoples.length}",
-                                style: GoogleFonts.roboto(
-                                    color: Colors.white, fontSize: 19),
-                              ),
-                            ),
-                          ),
-                          GestureDetector(
-                            onTap: () =>
-                                ugcc.actualScreen.value = Screen.expenses,
-                            child: Container(
-                              decoration:
-                                  ugcc.actualScreen.value == Screen.expenses
-                                      ? BoxDecoration(
-                                          border: Border(
-                                            bottom: BorderSide(
-                                              color: Colors.white,
-                                            ),
-                                          ),
-                                        )
-                                      : BoxDecoration(),
-                              child: Text(
-                                "Despesas: ${ugcc.expenses.length}",
-                                style: GoogleFonts.roboto(
-                                    color: Colors.white, fontSize: 19),
-                              ),
-                            ),
-                          ),
-                          GestureDetector(
-                            onTap: () => ugcc.actualScreen.value = Screen.chat,
-                            child: Container(
-                              decoration: ugcc.actualScreen.value == Screen.chat
-                                  ? BoxDecoration(
-                                      border: Border(
-                                        bottom: BorderSide(
-                                          color: Colors.white,
                                         ),
-                                      ),
-                                    )
-                                  : BoxDecoration(),
-                              child: Text(
-                                "Chat",
-                                style: GoogleFonts.roboto(
-                                    color: Colors.white, fontSize: 19),
-                              ),
+                                      )
+                                    : BoxDecoration(),
+                            child: Text(
+                              "Pessoas: ${ugcc.peoples.length}",
+                              style: GoogleFonts.roboto(
+                                  color: Colors.white, fontSize: 19),
                             ),
                           ),
-                        ],
-                      ),
+                        ),
+                        GestureDetector(
+                          onTap: () =>
+                              ugcc.actualScreen.value = Screen.expenses,
+                          child: Container(
+                            decoration:
+                                ugcc.actualScreen.value == Screen.expenses
+                                    ? BoxDecoration(
+                                        border: Border(
+                                          bottom: BorderSide(
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                      )
+                                    : BoxDecoration(),
+                            child: Text(
+                              "Despesas: ${ugcc.expenses.length}",
+                              style: GoogleFonts.roboto(
+                                  color: Colors.white, fontSize: 19),
+                            ),
+                          ),
+                        ),
+                        GestureDetector(
+                          onTap: () => ugcc.actualScreen.value = Screen.chat,
+                          child: Container(
+                            decoration: ugcc.actualScreen.value == Screen.chat
+                                ? BoxDecoration(
+                                    border: Border(
+                                      bottom: BorderSide(
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  )
+                                : BoxDecoration(),
+                            child: Text(
+                              "Chat",
+                              style: GoogleFonts.roboto(
+                                  color: Colors.white, fontSize: 19),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                   SizedBox(
