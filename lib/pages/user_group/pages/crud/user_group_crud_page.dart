@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'dart:io';
 import 'package:flutter/material.dart';
@@ -17,6 +18,7 @@ class UserGroupCrudPage extends GetView<UserGroupCrudController> {
   final ugcc = Get.find<UserGroupCrudController>();
   final textEditing = TextEditingController();
   final editTitle = TextEditingController();
+  final editMessage = TextEditingController();
   final editDescription = TextEditingController();
   final pageController = PageController(initialPage: 0);
   final _picker = ImagePicker();
@@ -171,7 +173,7 @@ class UserGroupCrudPage extends GetView<UserGroupCrudController> {
     }
 
     Widget _buildTrailingPeopleButton(dynamic data) {
-      if (data["paid"]) {
+      if ((data["paid"] != null) && (data["paid"])) {
         return Text(
           "Pago",
           style: TextStyle(
@@ -536,6 +538,130 @@ class UserGroupCrudPage extends GetView<UserGroupCrudController> {
       });
     }
 
+    Widget _buildChat() {
+      return Obx(
+        () => SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.max,
+            children: [
+              Container(
+                height: Get.mediaQuery.size.height * .5,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                ),
+                child: StreamBuilder(
+                  stream: FirebaseFirestore.instance
+                      .collection("group")
+                      .firestore
+                      .collection("${ugcc.group.value.id}")
+                      .snapshots(),
+                  builder: (context, snapshot) {
+                    if ((snapshot.connectionState == ConnectionState.waiting) ||
+                        (snapshot.connectionState == ConnectionState.none)) {
+                      return DefaultLoadingWidget();
+                    }
+
+                    return ListView(
+                      reverse: true,
+                      shrinkWrap: true,
+                      children: snapshot.data.documents.map<Widget>((data) {
+                        dynamic user = ugcc.peoples.firstWhere((element) =>
+                            element["user"] != null &&
+                            (element["user"]["uid"] == data["user"]));
+
+                        if (user["user"]["uid"] == ugcc.user.uid) {
+                          return Padding(
+                            padding: const EdgeInsets.only(right: 8.0),
+                            child: Container(
+                              alignment: Alignment.topRight,
+                              child: Container(
+                                constraints: BoxConstraints(
+                                  maxWidth:
+                                      MediaQuery.of(context).size.width * 0.80,
+                                ),
+                                padding: EdgeInsets.all(10),
+                                margin: EdgeInsets.symmetric(vertical: 10),
+                                decoration: BoxDecoration(
+                                  color: Theme.of(context).primaryColor,
+                                  borderRadius: BorderRadius.circular(15),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.grey.withOpacity(0.5),
+                                      spreadRadius: 2,
+                                      blurRadius: 5,
+                                    ),
+                                  ],
+                                ),
+                                child: Text(
+                                  data["text"],
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          );
+                        }
+
+                        return ListTile(
+                          leading: _buildUserAvatar(
+                              image: user["user"] == null
+                                  ? ""
+                                  : user["user"]["avatar"] ?? ""),
+                          title: Text(data["text"]),
+                          subtitle: Text(user["user"]["name"]),
+                        );
+                      }
+                          // ListTile(
+                          //   title: Text(data.data["text"]),
+                          // ),
+                          ).toList(),
+                    );
+                  },
+                ),
+              ),
+              Container(
+                decoration: BoxDecoration(color: Colors.white70),
+                child: Row(
+                  children: [
+                    IconButton(
+                        icon: Icon(
+                          Icons.photo_camera,
+                          color: Get.theme.primaryColor,
+                        ),
+                        onPressed: () => null),
+                    Expanded(
+                      child: TextField(
+                        controller: editMessage,
+                        onChanged: ugcc.setTextMessage,
+                        decoration: InputDecoration.collapsed(
+                            hintText: 'Enviar uma mensagem'),
+                      ),
+                    ),
+                    IconButton(
+                        icon: Icon(
+                          Icons.send,
+                          color:
+                              ugcc.textMessage.value.replaceAll(" ", "") == ""
+                                  ? Colors.grey
+                                  : Get.theme.primaryColor,
+                        ),
+                        onPressed:
+                            ugcc.textMessage.value.replaceAll(" ", "") == ""
+                                ? null
+                                : () {
+                                    ugcc.sendMessage();
+                                    editMessage.text = "";
+                                  }),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
     return Scaffold(
       backgroundColor: Get.theme.primaryColor,
       bottomNavigationBar: BottomAppBar(
@@ -561,7 +687,8 @@ class UserGroupCrudPage extends GetView<UserGroupCrudController> {
         ),
       ),
       floatingActionButton: Obx(
-        () => ugcc.group.value.closed != null && ugcc.group.value.closed
+        () => (ugcc.group.value.closed != null && ugcc.group.value.closed) ||
+                (ugcc.actualScreen.value == Screen.chat)
             ? Container()
             : FloatingActionButton(
                 backgroundColor: Colors.white,
@@ -590,153 +717,160 @@ class UserGroupCrudPage extends GetView<UserGroupCrudController> {
                 child: Icon(Icons.add, color: Colors.black),
               ),
       ),
-      body: RefreshIndicator(
-        onRefresh: () async => await ugcc.refreshData(),
-        child: NestedScrollView(
-          headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
-            return <Widget>[
-              SliverAppBar(
-                floating: true,
-                backgroundColor: Colors.black54,
-                title: Text("Grupo"),
-                flexibleSpace: Center(
-                  child: _buildImage(),
+      body: NestedScrollView(
+        headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
+          return <Widget>[
+            SliverAppBar(
+              floating: true,
+              backgroundColor: Colors.black54,
+              title: Text("Grupo"),
+              flexibleSpace: Center(
+                child: _buildImage(),
+              ),
+              bottom: PreferredSize(
+                child: Padding(
+                  padding: const EdgeInsets.all(12),
+                  child: Obx(
+                    () => Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              ugcc.group.value.title.length > 22
+                                  ? ugcc.group.value.title.substring(0, 22) +
+                                      "..."
+                                  : ugcc.group.value.title,
+                              style: GoogleFonts.roboto(
+                                  fontSize: 22, color: Colors.white),
+                            ),
+                            Text(
+                              "Criação em: ${DateFormat('dd/MM/yyyy').format(ugcc.group.value.createdAt)}",
+                              style: GoogleFonts.roboto(
+                                  fontSize: 12, color: Colors.white),
+                            ),
+                          ],
+                        ),
+                        IconButton(
+                          icon: Icon(
+                            Icons.edit,
+                            color: Colors.white,
+                          ),
+                          onPressed: () => Get.toNamed(Routes.CRUD_TITLE,
+                              arguments: {"group": ugcc.group.value}),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
-                bottom: PreferredSize(
-                  child: Padding(
-                    padding: const EdgeInsets.all(12),
-                    child: Obx(
-                      () => Row(
+                preferredSize: Size.fromHeight(175),
+              ),
+            ),
+          ];
+        },
+        body: SingleChildScrollView(
+          child: Obx(() {
+            if (ugcc.isLoading.value) {
+              return Container(
+                height: Get.mediaQuery.size.height * .5,
+                decoration: BoxDecoration(color: Get.theme.primaryColor),
+                child: DefaultLoadingWidget(),
+              );
+            }
+            return Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Center(
+                    child: Container(
+                      width: Get.mediaQuery.size.width * .6,
+                      child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                ugcc.group.value.title.length > 22
-                                    ? ugcc.group.value.title.substring(0, 22) +
-                                        "..."
-                                    : ugcc.group.value.title,
+                          GestureDetector(
+                            onTap: () =>
+                                ugcc.actualScreen.value = Screen.peoples,
+                            child: Container(
+                              decoration:
+                                  ugcc.actualScreen.value == Screen.peoples
+                                      ? BoxDecoration(
+                                          border: Border(
+                                            bottom: BorderSide(
+                                              color: Colors.white,
+                                            ),
+                                          ),
+                                        )
+                                      : BoxDecoration(),
+                              child: Text(
+                                "Pessoas: ${ugcc.peoples.length}",
                                 style: GoogleFonts.roboto(
-                                    fontSize: 22, color: Colors.white),
+                                    color: Colors.white, fontSize: 19),
                               ),
-                              Text(
-                                "Criação em: ${DateFormat('dd/MM/yyyy').format(ugcc.group.value.createdAt)}",
-                                style: GoogleFonts.roboto(
-                                    fontSize: 12, color: Colors.white),
-                              ),
-                            ],
-                          ),
-                          IconButton(
-                            icon: Icon(
-                              Icons.edit,
-                              color: Colors.white,
                             ),
-                            onPressed: () => Get.toNamed(Routes.CRUD_TITLE,
-                                arguments: {"group": ugcc.group.value}),
+                          ),
+                          GestureDetector(
+                            onTap: () =>
+                                ugcc.actualScreen.value = Screen.expenses,
+                            child: Container(
+                              decoration:
+                                  ugcc.actualScreen.value == Screen.expenses
+                                      ? BoxDecoration(
+                                          border: Border(
+                                            bottom: BorderSide(
+                                              color: Colors.white,
+                                            ),
+                                          ),
+                                        )
+                                      : BoxDecoration(),
+                              child: Text(
+                                "Despesas: ${ugcc.expenses.length}",
+                                style: GoogleFonts.roboto(
+                                    color: Colors.white, fontSize: 19),
+                              ),
+                            ),
+                          ),
+                          GestureDetector(
+                            onTap: () => ugcc.actualScreen.value = Screen.chat,
+                            child: Container(
+                              decoration: ugcc.actualScreen.value == Screen.chat
+                                  ? BoxDecoration(
+                                      border: Border(
+                                        bottom: BorderSide(
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                    )
+                                  : BoxDecoration(),
+                              child: Text(
+                                "Chat",
+                                style: GoogleFonts.roboto(
+                                    color: Colors.white, fontSize: 19),
+                              ),
+                            ),
                           ),
                         ],
                       ),
                     ),
                   ),
-                  preferredSize: Size.fromHeight(175),
-                ),
-              ),
-            ];
-          },
-          body: SingleChildScrollView(
-            child: Obx(() {
-              if (ugcc.isLoading.value) {
-                return Container(
-                  height: Get.mediaQuery.size.height * .5,
-                  decoration: BoxDecoration(color: Get.theme.primaryColor),
-                  child: Center(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text("Carregando..."),
-                        SizedBox(
-                          height: 10,
-                        ),
-                        LinearProgressIndicator()
-                      ],
-                    ),
+                  SizedBox(
+                    height: 15,
                   ),
-                );
-              }
-              return Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Center(
-                      child: Container(
-                        width: Get.mediaQuery.size.width * .6,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            GestureDetector(
-                              onTap: () =>
-                                  ugcc.actualScreen.value = Screen.peoples,
-                              child: Container(
-                                decoration:
-                                    ugcc.actualScreen.value == Screen.peoples
-                                        ? BoxDecoration(
-                                            border: Border(
-                                              bottom: BorderSide(
-                                                color: Colors.white,
-                                              ),
-                                            ),
-                                          )
-                                        : BoxDecoration(),
-                                child: Text(
-                                  "Pessoas: ${ugcc.peoples.length}",
-                                  style: GoogleFonts.roboto(
-                                      color: Colors.white, fontSize: 19),
-                                ),
-                              ),
-                            ),
-                            GestureDetector(
-                              onTap: () =>
-                                  ugcc.actualScreen.value = Screen.expenses,
-                              child: Container(
-                                decoration:
-                                    ugcc.actualScreen.value == Screen.expenses
-                                        ? BoxDecoration(
-                                            border: Border(
-                                              bottom: BorderSide(
-                                                color: Colors.white,
-                                              ),
-                                            ),
-                                          )
-                                        : BoxDecoration(),
-                                child: Text(
-                                  "Despesas: ${ugcc.expenses.length}",
-                                  style: GoogleFonts.roboto(
-                                      color: Colors.white, fontSize: 19),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    SizedBox(
-                      height: 15,
-                    ),
-                    Obx(() {
-                      if (ugcc.actualScreen.value == Screen.peoples) {
+                  Obx(() {
+                    switch (ugcc.actualScreen.value) {
+                      case Screen.peoples:
                         return _buildPeoples();
-                      } else {
+                      case Screen.expenses:
                         return _buildExpenses();
-                      }
-                    }),
-                  ],
-                ),
-              );
-            }),
-          ),
+                      default:
+                        return _buildChat();
+                    }
+                  }),
+                ],
+              ),
+            );
+          }),
         ),
       ),
     );

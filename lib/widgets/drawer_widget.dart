@@ -64,7 +64,7 @@ class _DrawerWidgetState extends State<DrawerWidget> {
             actualPage: widget.actualPage,
             page: 1,
             arguments: {
-              "user": widget.userModel,
+              "user": widget.userModel.toMap(),
               "userexpenses": widget.userExpensesModel,
             },
             route: Routes.PROFILE,

@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tcc_project/models/user_model.dart';
 import 'package:tcc_project/services/user_service.dart';
+import 'package:tcc_project/utils/util.dart';
 
 class ProfileController extends GetxController {
   RxString avatar = "".obs;
@@ -14,7 +15,7 @@ class ProfileController extends GetxController {
   UserModel user;
   ProfileController({Map pageArgs}) {
     if (pageArgs != null) {
-      this.user = pageArgs["user"];
+      this.user = UserModel.fromMap(pageArgs["user"]);
       this.userExpenses = pageArgs["userexpenses"];
     }
 
@@ -25,23 +26,39 @@ class ProfileController extends GetxController {
 
   Future updateProfileImage(File image) async {
     this.isLoading.value = true;
-    StorageTaskSnapshot snapshot = await FirebaseStorage.instance
+
+    // TaskSnapshot snapshot = FirebaseStorage.instance
+    //     .ref()
+    //     .child("images/${this.user.uid}")
+    //     .putFile(image)
+    //     .snapshot;
+
+    await FirebaseStorage.instance
         .ref()
         .child("images/${this.user.uid}")
         .putFile(image)
-        .onComplete;
+        .then((data) async {
+      await data.ref.getDownloadURL().then((value) {
+        this.user.avatar = value;
+      });
+    });
 
-    this.user.avatar = await snapshot.ref.getDownloadURL();
+    this.user.avatar =
+        await Util.uploadImageFirebase(image, "images/${this.user.uid}");
+
+    //await task.whenComplete(() => null);
+    // this.user.avatar = await task.storage.ref().getDownloadURL();
+
     UserService us = UserService();
     var response = await us.saveUser(this.user.toMap());
     this.avatar.value = response.data["avatar"];
 
-    if ((snapshot.error == null) && (response.data != null)) {
+    if (response.data != null) {
       Get.defaultDialog(
         title: "Sucesso",
         middleText: "Foto adicionada com sucesso!",
         confirm: MaterialButton(
-          onPressed: () => Get.back,
+          onPressed: () => Get.back(),
           child: Text("Ok"),
           color: Get.theme.primaryColor,
         ),

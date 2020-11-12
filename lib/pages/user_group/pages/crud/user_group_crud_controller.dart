@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -16,7 +17,7 @@ import 'package:tcc_project/services/userexpense_service.dart';
 import 'package:tcc_project/services/usergroup_service.dart';
 import 'package:tcc_project/utils/util.dart';
 
-enum Screen { peoples, expenses }
+enum Screen { peoples, expenses, chat }
 
 class UserGroupCrudController extends GetxController {
   UserModel user;
@@ -37,6 +38,7 @@ class UserGroupCrudController extends GetxController {
   Rx<Screen> actualScreen = Screen.peoples.obs;
   RxBool isLoading = false.obs;
   RxString avatar = "".obs;
+  RxString textMessage = "".obs;
   // bool isAdmin;
 
   final ugc = Get.find<UserGroupController>();
@@ -54,6 +56,8 @@ class UserGroupCrudController extends GetxController {
 
     this.observation.value = this.getActualUserGroup().paymentObservation;
   }
+
+  void setTextMessage(String value) => this.textMessage.value = value;
 
   bool get isAdmin => this
       .peoples
@@ -324,6 +328,7 @@ class UserGroupCrudController extends GetxController {
   }
 
   Future refreshData() async {
+    this.isLoading.value = true;
     try {
       this.group.value = await _service.findById(this.group.value.id);
       Response response = await _serviceEx.getByGroup(this.group.value.id);
@@ -337,7 +342,21 @@ class UserGroupCrudController extends GetxController {
         }
       }
     } finally {
-      return this.userExpenses;
+      this.isLoading.value = false;
     }
+  }
+
+  void sendMessage() {
+    FirebaseFirestore.instance
+        .collection("group")
+        .firestore
+        .collection("${this.group.value.id}")
+        .add({
+      "user": this.user.uid,
+      "date": DateTime.now(),
+      "text": this.textMessage.value
+    });
+
+    this.textMessage.value = "";
   }
 }

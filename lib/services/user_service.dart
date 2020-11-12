@@ -33,4 +33,13 @@ class UserService {
       throw e;
     }
   }
+
+  Future getOneUserByExclusiveUserName(String name) async {
+    try {
+      return await dio.get("${Constants.api}/user/exclusivename/$name");
+    } catch (e) {
+      print(e);
+      throw e;
+    }
+  }
 }

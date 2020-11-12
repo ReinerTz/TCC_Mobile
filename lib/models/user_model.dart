@@ -34,7 +34,8 @@ class UserModel {
   factory UserModel.fromMap(Map<String, dynamic> json) => UserModel(
         name: json["name"] == null ? "" : json["name"],
         email: json["email"] == null ? "" : json["email"],
-        birthday: json["birthday"] == null ? null : json["birthday"],
+        birthday:
+            json["birthday"] == null ? null : DateTime.parse(json["birthday"]),
         avatar: json["avatar"] == null ? "" : json["avatar"],
         exclusiveUserName: json["exclusive_user_name"] == null
             ? ""
@@ -46,7 +47,9 @@ class UserModel {
   Map<String, dynamic> toMap() => {
         "name": name == null ? "" : name,
         "email": email == null ? "" : email,
-        "birthday": birthday == null ? null : birthday,
+        "birthday": birthday == null
+            ? null
+            : "${birthday.year.toString().padLeft(4, '0')}-${birthday.month.toString().padLeft(2, '0')}-${birthday.day.toString().padLeft(2, '0')}",
         "avatar": avatar == null ? "" : avatar,
         "exclusive_user_name":
             exclusiveUserName == null ? "" : exclusiveUserName,

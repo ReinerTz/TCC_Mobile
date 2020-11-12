@@ -17,7 +17,7 @@ class SignInService extends GetxController {
   //   return null;
   // }
 
-  Future<FirebaseUser> signInFirebase(String email, String password) async {
+  Future<User> signInFirebase(String email, String password) async {
     try {
       return (await FirebaseAuth.instance
               .signInWithEmailAndPassword(email: email, password: password))

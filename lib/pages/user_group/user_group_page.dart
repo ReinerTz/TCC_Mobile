@@ -28,7 +28,7 @@ class UserGroupPage extends GetWidget<UserGroupController> {
     }
 
     Widget _buildSubtitle(dynamic data) {
-      if (data["closed"]) {
+      if ((data["closed"] != null) && (data["closed"])) {
         return Text("Conta fechada!", style: TextStyle(color: Colors.red));
       } else {
         return Text("Conta aberta!",

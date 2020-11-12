@@ -45,7 +45,8 @@ class UserGroupController extends GetxController {
         result = await _userGroupService.save(userGroupModel.toMap());
 
         if (result.statusCode == 200) {
-          this.groups.add(result.data);
+          // ignore: invalid_use_of_protected_member
+          this.groups.value.add(result.data);
           Get.toNamed(Routes.USER_GROUP_CRUD, arguments: {
             "user": this.user.toMap(),
             "group": group.toMap(),

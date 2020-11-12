@@ -5,7 +5,7 @@ import 'package:tcc_project/services/user_service.dart';
 
 class SignUpService {
   Future<bool> signUp(UserModel userModel, String password) async {
-    FirebaseUser user = await signUpFirebase(userModel.email, password);
+    User user = await signUpFirebase(userModel.email, password);
     if (user == null) {
       return false;
     }
@@ -23,8 +23,8 @@ class SignUpService {
     }
   }
 
-  Future<FirebaseUser> signUpFirebase(String email, String password) async {
-    FirebaseUser user;
+  Future<User> signUpFirebase(String email, String password) async {
+    User user;
 
     try {
       user = (await FirebaseAuth.instance
