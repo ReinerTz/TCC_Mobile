@@ -27,27 +27,8 @@ class ProfileController extends GetxController {
   Future updateProfileImage(File image) async {
     this.isLoading.value = true;
 
-    // TaskSnapshot snapshot = FirebaseStorage.instance
-    //     .ref()
-    //     .child("images/${this.user.uid}")
-    //     .putFile(image)
-    //     .snapshot;
-
-    await FirebaseStorage.instance
-        .ref()
-        .child("images/${this.user.uid}")
-        .putFile(image)
-        .then((data) async {
-      await data.ref.getDownloadURL().then((value) {
-        this.user.avatar = value;
-      });
-    });
-
     this.user.avatar =
         await Util.uploadImageFirebase(image, "images/${this.user.uid}");
-
-    //await task.whenComplete(() => null);
-    // this.user.avatar = await task.storage.ref().getDownloadURL();
 
     UserService us = UserService();
     var response = await us.saveUser(this.user.toMap());
