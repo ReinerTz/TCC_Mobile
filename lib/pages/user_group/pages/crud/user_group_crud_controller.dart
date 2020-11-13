@@ -100,13 +100,21 @@ class UserGroupCrudController extends GetxController {
       Get.defaultDialog(
         title: "Sucesso",
         middleText: "Foto adicionada com sucesso!",
-        onConfirm: () => Get.back(),
+        confirm: MaterialButton(
+          color: Get.theme.primaryColor,
+          child: Text("Ok"),
+          onPressed: () => Get.back(),
+        ),
       );
     } else {
       Get.defaultDialog(
         title: "Erro",
         middleText: "Ocorreu um erro ao adicionar a foto",
-        onConfirm: () => Get.back(),
+        confirm: MaterialButton(
+          color: Get.theme.primaryColor,
+          child: Text("Ok"),
+          onPressed: () => Get.back(),
+        ),
       );
     }
     this.isLoading.value = false;
@@ -244,12 +252,13 @@ class UserGroupCrudController extends GetxController {
   }
 
   UserGroupModel getActualUserGroup() {
-    return UserGroupModel.fromMap(
+    UserGroupModel usr = UserGroupModel.fromMap(
       this.peoples.firstWhere(
             (data) => (data["user"] != null &&
                 (data["user"]["uid"] == this.user.uid)),
           ),
     );
+    return usr;
   }
 
   int getUserGroupIndex() {

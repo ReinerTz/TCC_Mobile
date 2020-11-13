@@ -5,9 +5,11 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:tcc_project/common/constants.dart';
 import 'package:tcc_project/pages/profile_view/profile_view_controller.dart';
 import 'package:tcc_project/widgets/appbar_widget.dart';
+import 'package:intl/intl.dart';
 
 class ProfileViewPage extends GetWidget<ProfileViewController> {
   final profileController = Get.find<ProfileViewController>();
+  final df = DateFormat("dd/MM/yyyy");
 
   @override
   Widget build(BuildContext context) {
@@ -50,7 +52,7 @@ class ProfileViewPage extends GetWidget<ProfileViewController> {
                 icon: Icon(Icons.calendar_today),
                 subtitle: profileController.user.birthday == null
                     ? "Nenhuma data cadastrada"
-                    : profileController.user.birthday,
+                    : df.format(profileController.user.birthday),
                 title: "Data de nascimento",
               ),
             ],

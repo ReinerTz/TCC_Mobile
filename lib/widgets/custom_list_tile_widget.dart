@@ -1,6 +1,9 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:tcc_project/routes/app_routes.dart';
+import 'package:tcc_project/services/userexpense_service.dart';
 
 class CustomListTileWidget extends StatelessWidget {
   final IconData icon;
@@ -21,9 +24,14 @@ class CustomListTileWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      onTap: () {
+      onTap: () async {
+        if (this.route == Routes.HOME) {
+          Response result = await UserExpenseService()
+              .findExpensesbyUser(this.arguments["user"]["uid"]);
+          this.arguments["userexpenses"] = result.data;
+        }
+
         Get.offAllNamed(this.route, arguments: this.arguments);
-        // _pageController.jumpToPage(_page);
       },
       leading: Icon(
         this.icon,
