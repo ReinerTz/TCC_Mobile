@@ -34,8 +34,9 @@ class LoginController extends GetxController {
           if (response.statusCode == 200) {
             dynamic userModel = response.data;
             if (userModel == null) {
-              userModel = await us.saveUser(
-                  UserModel(email: user.email, uid: user.uid).toMap());
+              userModel = (await us.saveUser(
+                      UserModel(email: user.email, uid: user.uid).toMap()))
+                  .data;
             }
             Response result =
                 await _userExpenseService.findExpensesbyUser(user.uid);

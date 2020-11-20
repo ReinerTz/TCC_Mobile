@@ -15,6 +15,7 @@ class FriendshipListPage extends GetWidget<FriendshipListController> {
   @override
   Widget build(BuildContext context) {
     Widget _buildUserAvatar(String image) {
+      image = image ?? "";
       return Container(
         height: 60,
         width: 60,
@@ -22,7 +23,7 @@ class FriendshipListPage extends GetWidget<FriendshipListController> {
           shape: BoxShape.circle,
           image: DecorationImage(
             fit: BoxFit.fill,
-            image: image.isNull
+            image: image.isEmpty
                 ? AssetImage(AssetImages.AVATAR)
                 : NetworkImage(image),
           ),
@@ -54,7 +55,7 @@ class FriendshipListPage extends GetWidget<FriendshipListController> {
                     trailing: Icon(Icons.search),
                   ),
                   onTap: () => Get.toNamed(Routes.FRIENDSHIP,
-                      arguments: {"user": flc.user}),
+                      arguments: {"user": flc.user.toMap()}),
                 ),
                 Divider(
                   thickness: 2,

@@ -13,7 +13,7 @@ class FriendshipController extends GetxController {
 
   FriendshipController({Map pageArgs}) {
     if (pageArgs != null) {
-      this.user = pageArgs["user"];
+      this.user = UserModel.fromMap(pageArgs["user"]);
     }
   }
 

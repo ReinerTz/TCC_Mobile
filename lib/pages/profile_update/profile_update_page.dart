@@ -28,6 +28,7 @@ class ProfileUpdatePage extends GetWidget<ProfileUpdateController> {
             mask: '(00) 00000-0000',
             text: Util.onlyNumbers(profileUpdateController.value.value));
         break;
+
       default:
         _control = null;
     }
@@ -61,6 +62,11 @@ class ProfileUpdatePage extends GetWidget<ProfileUpdateController> {
             onChanged: profileUpdateController.setValue,
             keyboardType: TextInputType.number,
           );
+        case "exclusive_user_name":
+          return TextFormField(
+              decoration: InputDecoration(hintText: "ex: @Fulaninho"),
+              onChanged: profileUpdateController.setValue,
+              initialValue: profileUpdateController.value.value);
         default:
           return TextFormField(
             onChanged: profileUpdateController.setValue,

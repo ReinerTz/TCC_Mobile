@@ -63,7 +63,9 @@ class _SignInWidgetState extends State<SignInWidget> {
         child: Align(
           alignment: Alignment.centerLeft,
           child: InkWell(
-            onTap: () {},
+            onTap: () async {
+              await signInController.forgotPassword();
+            },
             child: Text(
               "Esqueci minha senha",
               style: TextStyle(fontWeight: FontWeight.bold),

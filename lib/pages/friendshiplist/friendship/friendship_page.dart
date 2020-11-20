@@ -21,7 +21,7 @@ class FriendshipPage extends GetWidget<FriendshipController> {
           shape: BoxShape.circle,
           image: DecorationImage(
             fit: BoxFit.fill,
-            image: image.isNull
+            image: image.isEmpty
                 ? AssetImage(AssetImages.AVATAR)
                 : NetworkImage(image),
           ),
@@ -91,7 +91,7 @@ class FriendshipPage extends GetWidget<FriendshipController> {
       return InkWell(
         child: Card(
           child: ListTile(
-            leading: _buildUserAvatar(user["avatar"]),
+            leading: _buildUserAvatar(user["avatar"] ?? ""),
             title: Text(user["name"]),
             subtitle: _buildSubtitle(user),
           ),
@@ -105,8 +105,7 @@ class FriendshipPage extends GetWidget<FriendshipController> {
         return DefaultLoadingWidget();
       }
 
-      return ListView(
-        shrinkWrap: true,
+      return Column(
         children: friendshipController.list
             .map(
               (data) => _buildTile(data),
@@ -117,11 +116,11 @@ class FriendshipPage extends GetWidget<FriendshipController> {
 
     return SafeArea(
       child: Scaffold(
+        backgroundColor: Get.theme.primaryColor,
         appBar: AppBarWidget(),
-        body: Container(
-          decoration: BoxDecoration(color: Theme.of(context).primaryColor),
+        body: SingleChildScrollView(
           child: Obx(() {
-            return ListView(
+            return Column(
               children: [
                 Padding(
                   padding: const EdgeInsets.all(8.0),

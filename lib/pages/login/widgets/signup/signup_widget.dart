@@ -36,27 +36,6 @@ class _SignUpWidgetState extends State<SignUpWidget> {
       );
     }
 
-    Widget _buildNameTF() {
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Text(
-            'NOME COMPLETO',
-            style: kLabelStyle,
-          ),
-          Container(
-            alignment: Alignment.centerLeft,
-            child: TextFormField(
-              onChanged: suc.setName,
-              keyboardType: TextInputType.emailAddress,
-              style: TextStyle(
-                  color: Colors.black, fontFamily: 'OpenSans', fontSize: 16),
-            ),
-          ),
-        ],
-      );
-    }
-
     Widget _buildPasswordTF() {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -120,10 +99,6 @@ class _SignUpWidgetState extends State<SignUpWidget> {
 
       return Column(
         children: <Widget>[
-          _buildNameTF(),
-          SizedBox(
-            height: 15,
-          ),
           _buildEmailTF(),
           SizedBox(
             height: 15,
