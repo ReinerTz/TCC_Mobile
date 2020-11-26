@@ -76,7 +76,7 @@ class Util {
         "required": false,
       },
       {
-        "field": "Nome exclusivo",
+        "field": "Como os outros te encontram?",
         "value": user.exclusiveUserName,
         "fieldName": "exclusive_user_name",
         "canChange": true,
