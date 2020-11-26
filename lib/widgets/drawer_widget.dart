@@ -70,8 +70,8 @@ class _DrawerWidgetState extends State<DrawerWidget> {
             route: Routes.PROFILE,
           ),
           ListTile(
-            onTap: () {
-              FirebaseAuth.instance.signOut();
+            onTap: () async {
+              await FirebaseAuth.instance.signOut();
               Get.offAllNamed(Routes.INITIAL);
             },
             leading: Icon(

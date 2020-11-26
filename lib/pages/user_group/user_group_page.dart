@@ -85,7 +85,7 @@ class UserGroupPage extends GetWidget<UserGroupController> {
         appBar: AppBarWidget(title: "Meus grupos", actions: [
           IconButton(
             icon: Icon(Icons.refresh),
-            onPressed: () async => ugc.refreshData(),
+            onPressed: () async => await ugc.refreshData(),
           ),
         ]),
         backgroundColor: Get.theme.primaryColor,

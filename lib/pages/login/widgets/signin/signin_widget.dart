@@ -67,7 +67,7 @@ class _SignInWidgetState extends State<SignInWidget> {
               await signInController.forgotPassword();
             },
             child: Text(
-              "Esqueci minha senha",
+              "Redefinir senha",
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
           ),
