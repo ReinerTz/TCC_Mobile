@@ -38,11 +38,6 @@ class Util {
         return value;
       });
     });
-
-    // TaskSnapshot snapshot =
-    //     FirebaseStorage.instance.ref().child(path).putFile(image).snapshot;
-
-    // return await snapshot.ref.getDownloadURL();
   }
 
   static List<dynamic> items(UserModel user) {

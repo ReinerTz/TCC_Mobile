@@ -1,15 +1,17 @@
 import 'package:dio/dio.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
 import 'package:tcc_project/models/user_model.dart';
 import 'package:tcc_project/routes/app_routes.dart';
 import 'package:tcc_project/services/group_service.dart';
+import 'package:tcc_project/services/user_service.dart';
+import 'package:tcc_project/services/userexpense_service.dart';
 
 class HomeController extends GetxController {
   UserModel user;
   GroupService _groupService = GroupService();
   RxList<dynamic> userExpenses = [].obs;
   RxList<dynamic> listItems = [].obs;
-
   RxBool loading = false.obs;
   HomeController({Map pageArgs}) {
     if (pageArgs != null) {
@@ -68,5 +70,26 @@ class HomeController extends GetxController {
     }
 
     return null;
+  }
+
+  Future refreshData() async {
+    loading.value = true;
+    try {
+      if (user == null) {
+        Response response =
+            await UserService().getUser(FirebaseAuth.instance.currentUser.uid);
+        if (response.statusCode == 200) {
+          this.user = UserModel.fromMap(response.data);
+        }
+      }
+
+      Response result = await UserExpenseService().findExpensesbyUser(user.uid);
+      if ((result != null) && (result.statusCode == 200)) {
+        this.userExpenses.value = result.data;
+        _buildListItems();
+      }
+    } finally {
+      loading.value = false;
+    }
   }
 }

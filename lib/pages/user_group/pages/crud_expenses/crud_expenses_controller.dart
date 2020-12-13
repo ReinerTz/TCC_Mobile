@@ -58,6 +58,9 @@ class CrudExpensesController extends GetxController {
           this.expense.value.id == null);
 
   double get total => this.expense.value.price * this.expense.value.quantity;
+  // dynamic get diference => this.peoples.reduce((total, value) {
+  //       return total["price"] ?? 0 + value["price"] ?? 0;
+  //     });
 
   void setTitle(String value) => this.expense.value.title = value;
   void setPrice(double value) {
@@ -205,5 +208,14 @@ class CrudExpensesController extends GetxController {
       }
     }
     recalculatePrice();
+  }
+
+  double getSumPeoples() {
+    double totalValue = 0;
+    this.peoples.forEach((value) {
+      totalValue += value["price"];
+    });
+
+    return totalValue - this.total;
   }
 }

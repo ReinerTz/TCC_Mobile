@@ -6,24 +6,12 @@ import 'package:tcc_project/services/user_service.dart';
 class SignInService extends GetxController {
   UserService userService = UserService();
 
-  // Future<UserModel> signIn(String email, String password) async {
-  //   await FirebaseAuth.instance.signOut();
-  //   FirebaseUser user = await signUpFirebase(email, password);
-  //   Response response = await signInWithUid(user.uid);
-
-  //   if (response.statusCode == 200) {
-  //     return UserModel.fromMap(response.data);
-  //   }
-  //   return null;
-  // }
-
   Future<User> signInFirebase(String email, String password) async {
     try {
       return (await FirebaseAuth.instance
               .signInWithEmailAndPassword(email: email, password: password))
           .user;
     } catch (error) {
-      print(error);
       Get.defaultDialog(
         title: "Erro",
         middleText: "Ocorreu um erro ao tentar realizar o login ${error.code}",

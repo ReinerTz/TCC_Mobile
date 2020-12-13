@@ -142,8 +142,8 @@ class UserGroupCrudPage extends GetView<UserGroupCrudController> {
                 SizedBox(
                   height: 15,
                 ),
-                _buildPaymentImage(
-                    data["paymentPicture"], "Sem comprovante de pagamento"),
+                _buildPaymentImage(data["paymentPicture"] ?? "",
+                    "Sem comprovante de pagamento"),
                 Padding(
                   padding: const EdgeInsets.all(8),
                   child: TextFormField(

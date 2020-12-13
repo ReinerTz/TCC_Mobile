@@ -68,7 +68,14 @@ class HomePage extends GetWidget<HomeController> {
 
     return SafeArea(
       child: Scaffold(
-        appBar: AppBarWidget(),
+        appBar: AppBarWidget(
+          actions: [
+            IconButton(
+              icon: Icon(Icons.refresh),
+              onPressed: () async => await homeController.refreshData(),
+            ),
+          ],
+        ),
         drawer: DrawerWidget(
             homeController.user,
             0,

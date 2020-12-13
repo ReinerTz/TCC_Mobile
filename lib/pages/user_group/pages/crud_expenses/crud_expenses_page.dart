@@ -91,8 +91,16 @@ class CrudExpensesPage extends GetView<CrudExpensesController> {
                 ),
                 Container(
                   padding: EdgeInsets.only(top: 15),
-                  child: Text(
-                      "Valor total: ${controller.total.toStringAsFixed(2)}"),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                          "Valor total: R\$ ${controller.total.toStringAsFixed(2)}"),
+                      Text(
+                        "Diferença: R\$ ${controller.getSumPeoples().toStringAsFixed(2)}",
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),

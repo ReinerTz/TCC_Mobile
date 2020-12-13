@@ -31,7 +31,7 @@ class LoginController extends GetxController {
       if (user != null) {
         if (user.uid.isNotEmpty) {
           Response response = await sis.signInWithUid(user.uid);
-          if (response.statusCode == 200) {
+          if ((response != null) && (response.statusCode == 200)) {
             dynamic userModel = response.data;
             if (userModel == null) {
               userModel = (await us.saveUser(
